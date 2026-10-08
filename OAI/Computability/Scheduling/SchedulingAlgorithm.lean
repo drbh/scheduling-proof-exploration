@@ -222,23 +222,23 @@ theorem reachable_irrefl {n : ℕ} (G : Instance n) (hG : G.acyclic) :
     ∀ x, ¬reachable G x x := fun x hx => hG x ((reachable_iff G hG x x).mp hx)
 
 def scheduleAt {n : ℕ} (G : Instance n) (T : ℕ) : Option (Fin n → ℕ) :=
-  if hn : n ≤ 3*T then
-    (fullSolve (paddedOrder (reachable G) (3*T))).map
+  if hn : n ≤ 4*T then
+    (fullSolve (paddedOrder (reachable G) (4*T))).map
       (fun s x => s.time (Fin.castLE hn x))
   else none
 
-theorem Block.restrict_feasible {n T : ℕ} (G : Instance n) (hG : G.acyclic) (hn : n ≤ 3*T)
-    {s : Block (Fin (3*T))} (hs : s.Valid (paddedOrder (reachable G) (3*T)) Finset.univ) :
+theorem Block.restrict_feasible {n T : ℕ} (G : Instance n) (hG : G.acyclic) (hn : n ≤ 4*T)
+    {s : Block (Fin (4*T))} (hs : s.Valid (paddedOrder (reachable G) (4*T)) Finset.univ) :
     Feasible G T (fun x => s.time (Fin.castLE hn x)) := by
   obtain ⟨b,hbl,hbt⟩ := hs
   have hbT : b.length = T := by
     have hc := b.size
     simp only [Finset.coe_univ,Set.ncard_univ,Nat.card_eq_fintype_card,Fintype.card_fin] at hc
     omega
-  have hbcap (t : ℕ) : (Finset.univ.filter (fun x => b.time x = t)).card ≤ 3 := by
+  have hbcap (t : ℕ) : (Finset.univ.filter (fun x => b.time x = t)).card ≤ 4 := by
     have hc := b.capacity t
-    have he : {x | x ∈ (↑(Finset.univ : Finset (Fin (3*T))) : Set (Fin (3*T))) ∧ b.time x = t} =
-        (Finset.univ.filter (fun x => b.time x = t) : Set (Fin (3*T))) := by ext x; simp
+    have he : {x | x ∈ (↑(Finset.univ : Finset (Fin (4*T))) : Set (Fin (4*T))) ∧ b.time x = t} =
+        (Finset.univ.filter (fun x => b.time x = t) : Set (Fin (4*T))) := by ext x; simp
     rw [he,Set.ncard_coe_finset] at hc
     exact hc
   rw [← hbt]
@@ -270,10 +270,10 @@ theorem scheduleAt_complete {n T : ℕ} (G : Instance n) (hG : G.acyclic)
   obtain ⟨time,htime⟩ := hf
   have hn := htime.size_bound
   have hp := (feasible_iff_padded_layout G hn).mp ⟨time,htime⟩
-  have hrel : paddedOrder (reachable G) (3*T) = paddedOrder G.order (3*T) := by
+  have hrel : paddedOrder (reachable G) (4*T) = paddedOrder G.order (4*T) := by
     have hr : reachable G = G.order := by funext x y; exact propext (reachable_iff G hG x y)
     rw [hr]
-  obtain ⟨s,hs⟩ := fullSolve_complete (paddedOrder (reachable G) (3*T))
+  obtain ⟨s,hs⟩ := fullSolve_complete (paddedOrder (reachable G) (4*T))
     (paddedOrder_irrefl (reachable_irrefl G hG)) (paddedOrder_trans (reachable_trans G hG))
     (by simpa only [hrel] using hp)
   exact ⟨fun x => s.time (Fin.castLE hn x),by simp [scheduleAt,hn,hs]⟩
@@ -342,7 +342,7 @@ theorem serial_feasible {n : ℕ} (G : Instance n) (hG : G.acyclic) :
     Feasible G n (jobRank (reachable G)) := by
   refine ⟨jobRank_bounds _,?_,?_⟩
   · intro t
-    apply le_trans (show _ ≤ 1 from ?_) (by omega : 1 ≤ 3)
+    apply le_trans (show _ ≤ 1 from ?_) (by omega : 1 ≤ 4)
     apply Finset.card_le_one.mpr
     intro x hx y hy
     apply jobRank_injective (reachable G)

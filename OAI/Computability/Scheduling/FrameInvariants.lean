@@ -8,8 +8,8 @@ namespace ThreeMachine.Structure
 namespace Layout
 variable {J : Type} [Fintype J]
 
-theorem time_bounds (p : Layout J) (hfull : 3 ∣ Fintype.card J) (x : J) :
-    1 ≤ p.time x ∧ p.time x ≤ Fintype.card J / 3 := by
+theorem time_bounds (p : Layout J) (hfull : 4 ∣ Fintype.card J) (x : J) :
+    1 ≤ p.time x ∧ p.time x ≤ Fintype.card J / 4 := by
   obtain ⟨T, hT⟩ := hfull
   have hp := (p x).isLt
   dsimp [time]
@@ -24,15 +24,16 @@ noncomputable def slot (p : Layout J) (s : ℕ) : Finset J := by
   classical
   simp [slot]
 
-theorem card_slot (p : Layout J) (hfull : 3 ∣ Fintype.card J) (s : ℕ)
-    (hs : 1 ≤ s) (hsT : s ≤ Fintype.card J / 3) : (p.slot s).card = 3 := by
+theorem card_slot (p : Layout J) (hfull : 4 ∣ Fintype.card J) (s : ℕ)
+    (hs : 1 ≤ s) (hsT : s ≤ Fintype.card J / 4) : (p.slot s).card = 4 := by
   classical
   obtain ⟨T, hT⟩ := hfull
-  let i : Fin (Fintype.card J) := ⟨3 * (s - 1), by omega⟩
-  let j : Fin (Fintype.card J) := ⟨3 * (s - 1) + 1, by omega⟩
-  let k : Fin (Fintype.card J) := ⟨3 * (s - 1) + 2, by omega⟩
-  apply Finset.card_eq_three.mpr
-  refine ⟨p.symm i, p.symm j, p.symm k, ?_, ?_, ?_, ?_⟩
+  let i : Fin (Fintype.card J) := ⟨4 * (s - 1), by omega⟩
+  let j : Fin (Fintype.card J) := ⟨4 * (s - 1) + 1, by omega⟩
+  let k : Fin (Fintype.card J) := ⟨4 * (s - 1) + 2, by omega⟩
+  let l : Fin (Fintype.card J) := ⟨4 * (s - 1) + 3, by omega⟩
+  apply Finset.card_eq_four.mpr
+  refine ⟨p.symm i, p.symm j, p.symm k, p.symm l, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · intro he
     have hev := congrArg Fin.val (p.symm.injective he)
     dsimp [i, j] at hev
@@ -43,30 +44,45 @@ theorem card_slot (p : Layout J) (hfull : 3 ∣ Fintype.card J) (s : ℕ)
     omega
   · intro he
     have hev := congrArg Fin.val (p.symm.injective he)
+    dsimp [i, l] at hev
+    omega
+  · intro he
+    have hev := congrArg Fin.val (p.symm.injective he)
     dsimp [j, k] at hev
+    omega
+  · intro he
+    have hev := congrArg Fin.val (p.symm.injective he)
+    dsimp [j, l] at hev
+    omega
+  · intro he
+    have hev := congrArg Fin.val (p.symm.injective he)
+    dsimp [k, l] at hev
     omega
   · ext x
     simp only [mem_slot, Finset.mem_insert, Finset.mem_singleton]
-    have hxi : x = p.symm i ↔ (p x).val = 3 * (s - 1) := by
+    have hxi : x = p.symm i ↔ (p x).val = 4 * (s - 1) := by
       rw [Equiv.eq_symm_apply]
       exact Fin.ext_iff
-    have hxj : x = p.symm j ↔ (p x).val = 3 * (s - 1) + 1 := by
+    have hxj : x = p.symm j ↔ (p x).val = 4 * (s - 1) + 1 := by
       rw [Equiv.eq_symm_apply]
       exact Fin.ext_iff
-    have hxk : x = p.symm k ↔ (p x).val = 3 * (s - 1) + 2 := by
+    have hxk : x = p.symm k ↔ (p x).val = 4 * (s - 1) + 2 := by
       rw [Equiv.eq_symm_apply]
       exact Fin.ext_iff
-    rw [hxi, hxj, hxk]
+    have hxl : x = p.symm l ↔ (p x).val = 4 * (s - 1) + 3 := by
+      rw [Equiv.eq_symm_apply]
+      exact Fin.ext_iff
+    rw [hxi, hxj, hxk, hxl]
     dsimp [time]
     omega
 
-noncomputable def triple (p : Layout J) (hfull : 3 ∣ Fintype.card J)
-    (s : ℕ) (hs : 1 ≤ s) (hsT : s ≤ Fintype.card J / 3) : Triple J :=
+noncomputable def triple (p : Layout J) (hfull : 4 ∣ Fintype.card J)
+    (s : ℕ) (hs : 1 ≤ s) (hsT : s ≤ Fintype.card J / 4) : Triple J :=
   ⟨p.slot s, p.card_slot hfull s hs hsT⟩
 
-theorem triple_at (p : Layout J) (hfull : 3 ∣ Fintype.card J)
-    (s : ℕ) (hs : 1 ≤ s) (hsT : s ≤ Fintype.card J / 3) :
-    (Boundary.actual (p.triple hfull s hs hsT)).At p.time (Fintype.card J / 3) s := by
+theorem triple_at (p : Layout J) (hfull : 4 ∣ Fintype.card J)
+    (s : ℕ) (hs : 1 ≤ s) (hsT : s ≤ Fintype.card J / 4) :
+    (Boundary.actual (p.triple hfull s hs hsT)).At p.time (Fintype.card J / 4) s := by
   exact ⟨hs, hsT, fun x => p.mem_slot s x⟩
 
 def reverse (p : Layout J) : Layout J := p.trans Fin.revPerm
@@ -75,16 +91,16 @@ def reverse (p : Layout J) : Layout J := p.trans Fin.revPerm
   ext x
   simp [reverse]
 
-theorem reverse_time (p : Layout J) (hfull : 3 ∣ Fintype.card J) (x : J) :
-    p.reverse.time x = Fintype.card J / 3 + 1 - p.time x := by
+theorem reverse_time (p : Layout J) (hfull : 4 ∣ Fintype.card J) (x : J) :
+    p.reverse.time x = Fintype.card J / 4 + 1 - p.time x := by
   obtain ⟨T, hT⟩ := hfull
   have hp := (p x).isLt
-  change (Fintype.card J - ((p x).val + 1)) / 3 + 1 =
-    Fintype.card J / 3 + 1 - ((p x).val / 3 + 1)
+  change (Fintype.card J - ((p x).val + 1)) / 4 + 1 =
+    Fintype.card J / 4 + 1 - ((p x).val / 4 + 1)
   omega
 
 theorem reverse_respects {p : Layout J} {r : J → J → Prop}
-    (hfull : 3 ∣ Fintype.card J) (hp : p.Respects r) :
+    (hfull : 4 ∣ Fintype.card J) (hp : p.Respects r) :
     p.reverse.Respects (fun x y => r y x) := by
   intro x y hyx
   rw [p.reverse_time hfull, p.reverse_time hfull]
@@ -106,9 +122,9 @@ end Layout
 namespace Boundary
 variable {J : Type} [Fintype J]
 
-theorem at_reverse {p : Layout J} (hfull : 3 ∣ Fintype.card J)
-    {B : Boundary J} {s : ℕ} (h : B.At p.time (Fintype.card J / 3) s) :
-    B.reverse.At p.reverse.time (Fintype.card J / 3) (Fintype.card J / 3 + 1 - s) := by
+theorem at_reverse {p : Layout J} (hfull : 4 ∣ Fintype.card J)
+    {B : Boundary J} {s : ℕ} (h : B.At p.time (Fintype.card J / 4) s) :
+    B.reverse.At p.reverse.time (Fintype.card J / 4) (Fintype.card J / 4 + 1 - s) := by
   cases B with
   | left => dsimp [At] at h; subst s; rfl
   | right => dsimp [At] at h; subst s; simp [reverse, At]
@@ -400,9 +416,9 @@ theorem past_update {r : J → J → Prop} {p : Layout J} {priority : J → ℕ}
     {E : Finset J} {a v ap : ℕ} {A A' : Boundary J} {K K' : GlobalList J}
     {S H : Set J}
     (hp : p.Full r) (htrans : ∀ ⦃u z w⦄, r u z → r z w → r u w)
-    (hA : A.At p.time (Fintype.card J / 3) a)
-    (hA' : A'.At p.time (Fintype.card J / 3) ap)
-    (ha : a ≤ Fintype.card J / 3) (hap : ap < v)
+    (hA : A.At p.time (Fintype.card J / 4) a)
+    (hA' : A'.At p.time (Fintype.card J / 4) ap)
+    (ha : a ≤ Fintype.card J / 4) (hap : ap < v)
     (hE : ∀ z, z ∈ E ↔ a < p.time z ∧ p.time z < v)
     (hparent : PastInvariant r p.time K A a)
     (hH : GlobalUpset r H) (hHO : H ⊆ K.Qual)

@@ -317,7 +317,7 @@ structure ReverseSeed (r : J → J → Prop) (time : J → ℕ) (atoms : A → S
     (W : Set J) (B : Boundary J) (b : ℕ) where
   predicate : Set J
   downset : GlobalUpset (fun x y => r y x) predicate
-  small : Described atoms predicate 24
+  small : Described atoms predicate 28
   cover : ∀ x ∈ W, x ∉ B.pred r → x ∈ predicate
   earlier : ∀ x ∈ predicate, time x < b
 
@@ -339,7 +339,7 @@ theorem reverse_seed_at_edge {T a b ap bp v : ℕ} {B B' V : Boundary J}
     (hsep : B'.Separates r time E S bp)
     (hH : GlobalUpset (fun x y => r y x) Hext)
     (hagrees : ∀ x ∈ W, x ∈ Hext ↔ x ∈ S)
-    (hsmall : Described atoms Hext 21)
+    (hsmall : Described atoms Hext 25)
     (hPsmall : Described atoms (B.pred r) 1)
     (hDbsmall : Described atoms (B'.weakDesc r) 1)
     (hDvsmall : Described atoms (V.weakDesc r) 1) :
@@ -352,7 +352,7 @@ theorem reverse_seed_at_edge {T a b ap bp v : ℕ} {B B' V : Boundary J}
       exact hx.1.1.2 (Boundary.weakDesc_upset htrans B' hyx hy)
     · intro hy
       exact hx.1.2 (Boundary.weakDesc_upset htrans V hyx hy)
-  have hGsmall : Described atoms G 24 := by
+  have hGsmall : Described atoms G 28 := by
     exact ((hPsmall.diff hDbsmall).diff hDvsmall).inter hsmall
   refine ⟨⟨G, hup, hGsmall, ?_, ?_⟩⟩
   · intro x hx hnP
@@ -416,10 +416,10 @@ namespace RunData
 variable {K : GlobalList J} {W : Set J}
 
 theorem qual_small (D : RunData K rank atoms W) (hA : AtomSupport atoms r rank)
-    (hcard : K.indices.card ≤ 5) : Described atoms K.Qual 195 := by
+    (hcard : K.indices.card ≤ 6) : Described atoms K.Qual 195 := by
   classical
   by_cases hne : K.indices.Nonempty
-  · have hd := Described.finite_union K.indices K.entry (fun _ => 25) hne
+  · have hd := Described.finite_union K.indices K.entry (fun _ => 29) hne
       (fun i hi => D.entry_small hA.rankTail hi)
     apply hd.mono
     simp only [Finset.sum_const, smul_eq_mul]
@@ -430,21 +430,21 @@ theorem qual_small (D : RunData K rank atoms W) (hA : AtomSupport atoms r rank)
     exact hA.falsity.mono (by omega)
 
 theorem carry_cutoff_small (D : RunData K rank atoms W) (hA : AtomSupport atoms r rank)
-    (hcard : K.indices.card ≤ 5) (B : Boundary J) (d k : ℕ) :
+    (hcard : K.indices.card ≤ 6) (B : Boundary J) (d k : ℕ) :
     Described atoms (B.pred r \ (K.carry rank d k).Qual) 205 := by
-  have hc : (K.carry rank d k).indices.card ≤ 5 := by
+  have hc : (K.carry rank d k).indices.card ≤ 6 := by
     exact (Finset.card_filter_le _ _).trans hcard
   exact ((hA.pred B).diff ((D.carry d k).qual_small hA hc)).mono (by omega)
 
 theorem carry_low_extension (D : RunData K rank atoms W)
-    (hA : AtomSupport atoms r rank) (hcard : K.indices.card ≤ 5)
+    (hA : AtomSupport atoms r rank) (hcard : K.indices.card ≤ 6)
     (hK : K.Upsets r) (hsecond : GlobalUpset r D.second)
     (hstrict : ∀ x y, r x y → rank x < rank y)
     (htrans : ∀ ⦃x y z⦄, r x y → r y z → r x z)
     (B : Boundary J) (d k : ℕ) :
-    ∃ H : Set J, GlobalUpset (fun x y => r y x) H ∧ Described atoms H 21 ∧
+    ∃ H : Set J, GlobalUpset (fun x y => r y x) H ∧ Described atoms H 25 ∧
       ∀ x ∈ W, x ∈ H ↔ x ∈ B.pred r \ (K.carry rank d k).Qual := by
-  have hc : (K.carry rank d k).indices.card ≤ 5 :=
+  have hc : (K.carry rank d k).indices.card ≤ 6 :=
     (Finset.card_filter_le _ _).trans hcard
   obtain ⟨U, hUup, hUsmall, hUagree⟩ := (D.carry d k).short_upset_extension
     (GlobalList.carry_upsets hK hstrict) hsecond hstrict hA.rankTail hA.falsity hc
@@ -595,11 +595,11 @@ theorem sameUpdate_past {r : J → J → Prop} {p : Layout J} {rank : J → ℕ}
     {a b v ap B t : ℕ} {A Z A' : Boundary J} {W : Set J} {E : Finset J}
     {K : GlobalList J}
     (hp : p.Full r) (htrans : ∀ ⦃x y z⦄, r x y → r y z → r x z)
-    (hA : A.At p.time (Fintype.card J / 3) a)
-    (hA' : A'.At p.time (Fintype.card J / 3) ap)
+    (hA : A.At p.time (Fintype.card J / 4) a)
+    (hA' : A'.At p.time (Fintype.card J / 4) ap)
     (hW : ∀ x, x ∈ W ↔ x ∈ Window p.time a b)
     (hE : ∀ x, x ∈ E ↔ a < p.time x ∧ p.time x < v)
-    (hv : v < b) (ha : a ≤ Fintype.card J / 3) (hap : ap < v)
+    (hv : v < b) (ha : a ≤ Fintype.card J / 4) (hap : ap < v)
     (hB : 0 < B) (hrank : ∀ x, rank x < B)
     (hstrict : ∀ x y, r x y → rank x < rank y)
     (hK : K.Upsets r)
@@ -647,7 +647,7 @@ theorem sameUpdate_past {r : J → J → Prop} {p : Layout J} {rank : J → ℕ}
   · intro U hUideal _hUpre hUsub x hx
     apply first_boundary_force htrans hp.2 hE hUideal hx
     intro y hy hya
-    have habound : 1 ≤ a ∧ a ≤ Fintype.card J / 3 := hya ▸ p.time_bounds hp.1 y
+    have habound : 1 ≤ a ∧ a ≤ Fintype.card J / 4 := hya ▸ p.time_bounds hp.1 y
     have hxD : x ∉ A.desc r := by
       rw [Boundary.desc_eq_of_interior hA habound]
       exact hx.not_desc
@@ -671,7 +671,7 @@ theorem sameUpdate_past {r : J → J → Prop} {p : Layout J} {rank : J → ℕ}
 theorem sameUpdate_swap_inherited {r : J → J → Prop} {p : Layout J}
     {rank : J → ℕ} {K : GlobalList J} {W W' : Set J}
     {A Z : Boundary J} {a b B t : ℕ}
-    (hp : p.Full r) (hA : A.At p.time (Fintype.card J / 3) a)
+    (hp : p.Full r) (hA : A.At p.time (Fintype.card J / 4) a)
     (hW : ∀ x, x ∈ W ↔ x ∈ Window p.time a b) (hsub : W' ⊆ W)
     (hparent : SwapInvariant r p W K rank A a)
     (hqual : ∀ x ∈ W', x ∉ A.desc r →

@@ -44,8 +44,8 @@ theorem paddedOrder_castLE {n m : ℕ} {r : Fin n → Fin n → Prop} (hnm : n �
 namespace Structure
 
 theorem Layout.capacity {J : Type} [Fintype J] (p : Layout J)
-    (hfull : 3 ∣ Fintype.card J) (t : ℕ) : (p.slot t).card ≤ 3 := by
-  by_cases ht : 1 ≤ t ∧ t ≤ Fintype.card J / 3
+    (hfull : 4 ∣ Fintype.card J) (t : ℕ) : (p.slot t).card ≤ 4 := by
+  by_cases ht : 1 ≤ t ∧ t ≤ Fintype.card J / 4
   · exact (p.card_slot hfull t ht.1 ht.2).le
   · have he : p.slot t = ∅ := by
       apply Finset.eq_empty_iff_forall_notMem.mpr
@@ -57,13 +57,13 @@ theorem Layout.capacity {J : Type} [Fintype J] (p : Layout J)
 
 end Structure
 
-theorem feasible_iff_padded_layout {n T : ℕ} (G : Instance n) (hn : n ≤ 3*T) :
+theorem feasible_iff_padded_layout {n T : ℕ} (G : Instance n) (hn : n ≤ 4*T) :
     (∃ time, Feasible G T time) ↔
-      ∃ p : Structure.Layout (Fin (3*T)), p.Full (paddedOrder G.order (3*T)) := by
+      ∃ p : Structure.Layout (Fin (4*T)), p.Full (paddedOrder G.order (4*T)) := by
   classical
   constructor
   · rintro ⟨time, htime⟩
-    have hcap (t : ℕ) : {x | time x = t}.ncard ≤ 3 := by
+    have hcap (t : ℕ) : {x | time x = t}.ncard ≤ 4 := by
       have he : {x | time x = t} = (Finset.univ.filter (fun x => time x = t) : Set (Fin n)) := by
         ext x
         simp
@@ -72,9 +72,9 @@ theorem feasible_iff_padded_layout {n T : ℕ} (G : Instance n) (hn : n ≤ 3*T)
     obtain ⟨f, hf, ht⟩ := Structure.exists_slot_embedding time htime.1 hcap
     obtain ⟨σ, hσ⟩ := Equiv.Perm.exists_extending_pair (Fin.castLE hn) f
       (Fin.castLE_injective hn) hf
-    let p : Structure.Layout (Fin (3*T)) := σ.trans (finCongr (Fintype.card_fin _).symm)
+    let p : Structure.Layout (Fin (4*T)) := σ.trans (finCongr (Fintype.card_fin _).symm)
     have hp (x : Fin n) : p.time (Fin.castLE hn x) = time x := by
-      change (σ (Fin.castLE hn x)).val / 3 + 1 = time x
+      change (σ (Fin.castLE hn x)).val / 4 + 1 = time x
       rw [hσ]
       exact ht x
     refine ⟨p, by simp, ?_⟩
@@ -88,7 +88,7 @@ theorem feasible_iff_padded_layout {n T : ℕ} (G : Instance n) (hn : n ≤ 3*T)
     refine ⟨time, ?_, ?_, ?_⟩
     · intro x
       have h := p.time_bounds hp.1 (Fin.castLE hn x)
-      simpa only [Fintype.card_fin, Nat.mul_div_right _ (by omega : 0 < 3)] using h
+      simpa only [Fintype.card_fin, Nat.mul_div_right _ (by omega : 0 < 4)] using h
     · intro t
       have hcard : (Finset.univ.filter (fun x : Fin n => time x = t)).card ≤ (p.slot t).card := by
         apply Finset.card_le_card_of_injOn (Fin.castLE hn)
@@ -100,9 +100,9 @@ theorem feasible_iff_padded_layout {n T : ℕ} (G : Instance n) (hn : n ≤ 3*T)
       exact hp.2 _ _ ((paddedOrder_castLE hn x y).mpr (.single hxy))
 
 theorem Feasible.size_bound {n T : ℕ} {G : Instance n} {time : Fin n → ℕ}
-    (h : Feasible G T time) : n ≤ 3*T := by
+    (h : Feasible G T time) : n ≤ 4*T := by
   classical
-  have hcap (t : ℕ) : {x | time x = t}.ncard ≤ 3 := by
+  have hcap (t : ℕ) : {x | time x = t}.ncard ≤ 4 := by
     have he : {x | time x = t} = (Finset.univ.filter (fun x => time x = t) : Set (Fin n)) := by
       ext x
       simp

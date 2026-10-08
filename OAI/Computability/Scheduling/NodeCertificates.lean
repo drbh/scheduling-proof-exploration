@@ -15,15 +15,15 @@ structure NodeData (r : J → J → Prop) (rank : J → ℕ) (atoms : A → Set 
   b : ℕ
   left : Boundary J
   right : Boundary J
-  leftAt : left.At p.time (Fintype.card J / 3) a
-  rightAt : right.At p.time (Fintype.card J / 3) b
+  leftAt : left.At p.time (Fintype.card J / 4) a
+  rightAt : right.At p.time (Fintype.card J / 4) b
   window : ∀ x, x ∈ W ↔ x ∈ Window p.time a b
   list : GlobalList J
   run : RunData list rank atoms W
   upsets : list.Upsets r
   second_upset : GlobalUpset r run.second
   disjoint : list.InjectionDisjoint W
-  length : list.indices.card ≤ 5
+  length : list.indices.card ≤ 6
   high : ∀ x ∈ W, x ∈ list.Qual → x ∈ right.pred r
   low : ∀ x ∈ W, x ∉ list.Qual → x ∈ left.desc r
   past : PastInvariant r p.time list left a
@@ -55,7 +55,7 @@ theorem cover (D : NodeData r rank atoms p W) :
 
 noncomputable def root (p : Layout J) (hp : p.Full r)
     (hA : AtomSupport atoms r rank) : NodeData r rank atoms p Set.univ := by
-  refine { full := hp, a := 0, b := Fintype.card J / 3 + 1
+  refine { full := hp, a := 0, b := Fintype.card J / 4 + 1
            left := .left, right := .right, leftAt := rfl, rightAt := rfl
            window := ?_, list := .one Set.univ, run := RunData.root hA.truth
            upsets := ?_, second_upset := ?_, disjoint := ?_, length := ?_
@@ -99,10 +99,10 @@ structure EdgeData (r : J → J → Prop) (rank : J → ℕ) (atoms : A → Set 
     (B V A' B' : Boundary J) where
   full : p.Full r
   parent : W = Window p.time a b
-  endAt : B.At p.time (Fintype.card J / 3) b
-  centerAt : V.At p.time (Fintype.card J / 3) v
-  startAt : A'.At p.time (Fintype.card J / 3) ap
-  targetAt : B'.At p.time (Fintype.card J / 3) bp
+  endAt : B.At p.time (Fintype.card J / 4) b
+  centerAt : V.At p.time (Fintype.card J / 4) v
+  startAt : A'.At p.time (Fintype.card J / 4) ap
+  targetAt : B'.At p.time (Fintype.card J / 4) bp
   targetActual : ∃ Z, B' = Boundary.actual Z
   start_le : a ≤ ap
   strict : ap < bp
@@ -129,7 +129,7 @@ structure EdgeData (r : J → J → Prop) (rank : J → ℕ) (atoms : A → Set 
   cutoffAgrees : ∀ x ∈ W, x ∈ globalCutoff ↔ x ∈ cutoff
   lowExtension : Set J
   downset : GlobalUpset (fun x y => r y x) lowExtension
-  lowSmall : Described atoms lowExtension 21
+  lowSmall : Described atoms lowExtension 25
   lowAgrees : ∀ x ∈ W, x ∈ lowExtension ↔ x ∈ cutoff
 
 namespace EdgeData
@@ -160,12 +160,12 @@ noncomputable def toNode
   have hqual : ∀ x ∈ W', x ∈ K'.Qual ↔ x ∉ D.cutoff := by
     intro x hx
     exact (GlobalList.prune_qual D.list hx).trans (D.labels x (hsub hx))
-  have hlength : K'.indices.card ≤ 5 := by
+  have hlength : K'.indices.card ≤ 6 := by
     obtain ⟨Z, hZ⟩ := D.targetActual
     apply GlobalList.pruned_length D.upsets D.disjoint (B := Z)
     · intro z hz
       have ht : p.time z = bp := (show (Boundary.actual Z).At p.time
-        (Fintype.card J / 3) bp from hZ ▸ D.targetAt).2.2 z |>.mp hz
+        (Fintype.card J / 4) bp from hZ ▸ D.targetAt).2.2 z |>.mp hz
       rw [D.parent]
       exact ⟨by have := D.start_le; have := D.strict; omega,
         by have := D.target_le; have := D.center_lt; omega⟩
@@ -232,11 +232,11 @@ theorem exists_same_edge (D : NodeData r rank atoms p W)
     (hB : 0 < B) (hrank : ∀ x, rank x < B)
     (hstrict : ∀ x y, r x y → rank x < rank y)
     (hv : D.a < v ∧ v < D.b)
-    (hV : V.At p.time (Fintype.card J / 3) v)
+    (hV : V.At p.time (Fintype.card J / 4) v)
     (hcenter : V.Separates r p.time W (D.right.pred r) v)
     (hap : D.a ≤ ap) (hab : ap < bp) (hbp : bp ≤ v)
-    (hA' : A'.At p.time (Fintype.card J / 3) ap)
-    (hB' : B'.At p.time (Fintype.card J / 3) bp)
+    (hA' : A'.At p.time (Fintype.card J / 4) ap)
+    (hB' : B'.At p.time (Fintype.card J / 4) bp)
     (hactual : ∃ Z, B' = Boundary.actual Z)
     (ht : t ≤ (D.list.indices.sup id + 1) * B)
     (hnorm : p.NormalizedOn (Window p.time D.a v) r
@@ -280,7 +280,7 @@ theorem exists_same_edge (D : NodeData r rank atoms p W)
       have hyW : y ∈ W := (D.window y).mpr ⟨by omega,
         by have := hv.2; omega⟩
       exact (GlobalList.sameUpdate_key hrank D.high (hsub hx) hyW hxK hyK).mp hkey
-  have hapos : D.a ≤ Fintype.card J / 3 := by
+  have hapos : D.a ≤ Fintype.card J / 4 := by
     have := Boundary.at_le D.rightAt
     omega
   have hEeq : (↑E : Set J) = Window p.time D.a v := Set.ext hEwin
@@ -327,7 +327,7 @@ structure SwitchSeed (r : J → J → Prop) (time : J → ℕ) (atoms : A → Se
     (W : Set J) (B : Boundary J) (a : ℕ) where
   predicate : Set J
   upset : GlobalUpset r predicate
-  small : Described atoms predicate 24
+  small : Described atoms predicate 28
   cover : ∀ x ∈ W, x ∉ B.desc r → x ∈ predicate
   later : ∀ x ∈ predicate, a < time x
 
@@ -335,10 +335,10 @@ variable {r : J → J → Prop} {rank : J → ℕ} {atoms : A → Set J}
     {p : Layout J} {W : Set J}
 
 def ReverseSeed.toSwitch {B : Boundary J} {b : ℕ}
-    (D : ReverseSeed r p.time atoms W B b) (hfull : 3 ∣ Fintype.card J)
-    (hb : b ≤ Fintype.card J / 3 + 1) :
+    (D : ReverseSeed r p.time atoms W B b) (hfull : 4 ∣ Fintype.card J)
+    (hb : b ≤ Fintype.card J / 4 + 1) :
     SwitchSeed (fun x y => r y x) p.reverse.time atoms W B.reverse
-      (Fintype.card J / 3 + 1 - b) := by
+      (Fintype.card J / 4 + 1 - b) := by
   refine { predicate := D.predicate, upset := D.downset, small := D.small
            cover := ?_, later := ?_ }
   · simpa only [Boundary.desc_reverse] using D.cover
@@ -353,15 +353,15 @@ theorem exists_switch_edge {a b v ap bp B t : ℕ} {L R V A' B' : Boundary J}
     (hA : AtomSupport atoms r rank) (hrank : ∀ x, rank x < B)
     (hstrict : ∀ x y, r x y → rank x < rank y)
     (hW : ∀ x, x ∈ W ↔ x ∈ Window p.time a b)
-    (hL : L.At p.time (Fintype.card J / 3) a)
-    (hR : R.At p.time (Fintype.card J / 3) b)
+    (hL : L.At p.time (Fintype.card J / 4) a)
+    (hR : R.At p.time (Fintype.card J / 4) b)
     (hcover : ∀ x ∈ W, x ∈ L.desc r ∨ x ∈ R.pred r)
     (G : SwitchSeed r p.time atoms W L a)
-    (hv : a < v ∧ v < b) (hV : V.At p.time (Fintype.card J / 3) v)
+    (hv : a < v ∧ v < b) (hV : V.At p.time (Fintype.card J / 4) v)
     (hcenter : V.Separates r p.time W (L.desc r)ᶜ v)
     (hap : a ≤ ap) (hab : ap < bp) (hbp : bp ≤ v)
-    (hA' : A'.At p.time (Fintype.card J / 3) ap)
-    (hB' : B'.At p.time (Fintype.card J / 3) bp)
+    (hA' : A'.At p.time (Fintype.card J / 4) ap)
+    (hB' : B'.At p.time (Fintype.card J / 4) bp)
     (hactual : ∃ Z, B' = Boundary.actual Z) (ht : t ≤ B)
     (hnorm : p.NormalizedOn (Window p.time a v) r (switchPriority rank B (L.desc r)))
     (hstart : A'.Separates r p.time (Window p.time a v)
@@ -464,7 +464,7 @@ theorem window_first_slot {a b : ℕ} (hp : p.Full r)
   obtain ⟨y, hy⟩ := hne
   change a < p.time y ∧ p.time y < b at hy
   have hybound := p.time_bounds hp.1 y
-  have hb : a+1 ≤ Fintype.card J / 3 := by omega
+  have hb : a+1 ≤ Fintype.card J / 4 := by omega
   have hc := p.card_slot hp.1 (a+1) (by omega) hb
   have hn : (p.slot (a+1)).Nonempty := Finset.card_pos.mp (by omega)
   obtain ⟨x, hx⟩ := hn
@@ -475,7 +475,7 @@ theorem exists_node_center (D : NodeData r rank atoms p W)
     (htrans : ∀ ⦃x y z⦄, r x y → r y z → r x z) (hne : W.Nonempty) :
     ∃ q : Layout J, ∃ _hfix : p.FixedOutside q W, q.Respects r ∧
       ∃ (v : ℕ) (V : Boundary J), D.a < v ∧ v < D.b ∧
-        V.At q.time (Fintype.card J / 3) v ∧
+        V.At q.time (Fintype.card J / 4) v ∧
         V.Separates r q.time W (D.right.pred r) v := by
   classical
   let priority := fun x : J => if x ∈ D.right.pred r then (p x).val
@@ -526,9 +526,9 @@ theorem exists_node_center (D : NodeData r rank atoms p W)
   have hva : D.a < v := by omega
   have hvb : v < D.b := by omega
   have hvpos : 1 ≤ v := by omega
-  have hvle : v ≤ Fintype.card J / 3 := by omega
+  have hvle : v ≤ Fintype.card J / 4 := by omega
   let V := Boundary.actual (q.triple D.full.1 v hvpos hvle)
-  have hV : V.At q.time (Fintype.card J / 3) v := q.triple_at D.full.1 v hvpos hvle
+  have hV : V.At q.time (Fintype.card J / 4) v := q.triple_at D.full.1 v hvpos hvle
   refine ⟨q, hfix, hnorm.1, v, V, hva, hvb, hV, ?_⟩
   simpa only [hEeq] using (Boundary.actual_separates hV).mpr hsep
 

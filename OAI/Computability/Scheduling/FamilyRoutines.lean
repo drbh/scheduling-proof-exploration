@@ -35,30 +35,31 @@ def assignments : (k : ℕ) → Uniform (fun i (xs : List (α i)) => Structure.a
     ((id.pair (assignments k)).comp ((snd.pair fst).comp (swap.comp (finCons k)).map).flatMap).congr
       (fun _ _ => rfl)
 
-def tripleSet : Uniform (fun n (x : Universe n × (Fin n × (Fin n × Fin n))) =>
-    ({x.2.1,x.2.2.1,x.2.2.2} : Finset (Fin n))) := by
-  let P : Uniform (fun n (x : Fin n × (Fin n × (Fin n × Fin n))) =>
-      decide (x.1 = x.2.1 ∨ x.1 = x.2.2.1 ∨ x.1 = x.2.2.2)) :=
+def tripleSet : Uniform (fun n (x : Universe n × (Fin n × (Fin n × (Fin n × Fin n)))) =>
+    ({x.2.1,x.2.2.1,x.2.2.2.1,x.2.2.2.2} : Finset (Fin n))) := by
+  let P : Uniform (fun n (x : Fin n × (Fin n × (Fin n × (Fin n × Fin n)))) =>
+      decide (x.1 = x.2.1 ∨ x.1 = x.2.2.1 ∨ x.1 = x.2.2.2.1 ∨ x.1 = x.2.2.2.2)) :=
     ((fst.pair (snd.comp fst)).comp finEq).orD
       (((fst.pair (snd.comp (snd.comp fst))).comp finEq).orD
-        ((fst.pair (snd.comp (snd.comp snd))).comp finEq))
+        (((fst.pair (snd.comp (snd.comp (snd.comp fst)))).comp finEq).orD
+          ((fst.pair (snd.comp (snd.comp (snd.comp snd)))).comp finEq)))
   exact (((fst.comp universeSet).pair snd).comp P.setFilter).congr (fun _ x => by
     ext a; simp only [Function.comp_apply,Finset.mem_filter,Finset.mem_univ,true_and,decide_eq_true_eq,
       Finset.mem_insert,Finset.mem_singleton])
 
 def triples : Uniform (fun n (_ : Universe n) =>
     (Structure.tripleList (List.finRange n)).map Subtype.val) := by
-  let E := (universeList.pair (universeList.pair universeList |>.comp product)).comp product
+  let E := (universeList.pair (universeList.pair (universeList.pair universeList |>.comp product) |>.comp product)).comp product
   let A := (E.pair id).comp (swap.comp tripleSet).map
-  let P : Uniform (fun n (x : Finset (Fin n) × Unit) => decide (x.1.card = 3)) :=
-    (((fst.comp setCard).pair (constant 3)).comp (Realizer.eqNat.uniform ℕ))
+  let P : Uniform (fun n (x : Finset (Fin n) × Unit) => decide (x.1.card = 4)) :=
+    (((fst.comp setCard).pair (constant 4)).comp (Realizer.eqNat.uniform ℕ))
   exact ((A.pair unit).comp P.filter).congr (fun n _ => by
     dsimp only [Function.comp_apply]
     simp only [Structure.tripleList,List.product,List.map_flatMap,List.map_map,List.map_filterMap]
     rw [← List.filterMap_eq_filter]
     congr 1
     funext Z
-    by_cases h : Z.card = 3 <;> simp [Option.guard,h])
+    by_cases h : Z.card = 4 <;> simp [Option.guard,h])
 
 def predecessorCount : Uniform (fun n (x : Universe n × (Matrix n × Fin n)) =>
     Structure.predecessorCount (matrixRel x.2.1) x.2.2) :=
@@ -113,7 +114,7 @@ def coneSet {n : ℕ} (M : Matrix n) (frame : Bool) (kind : Fin 5) (Z : Finset (
   | _ => (Finset.univ.filter (fun x => ∃ y ∈ Z, R y x)) ∪ Z
 
 theorem atomicCone (n : ℕ) (M : Matrix n) (frame : Bool) (kind : Fin 5)
-    (Z : {s : Finset (Fin n) // s.card = 3}) :
+    (Z : {s : Finset (Fin n) // s.card = 4}) :
     Atomic.finsetEval (matrixRel M) (Structure.jobRank (matrixRel M))
       (Structure.reverseJobRank (matrixRel M)) (.cone frame kind Z) = coneSet M frame kind Z.val := by
   fin_cases kind <;> ext x <;> simp [Atomic.finsetEval,coneSet]

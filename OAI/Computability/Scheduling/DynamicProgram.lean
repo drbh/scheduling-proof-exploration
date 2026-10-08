@@ -34,7 +34,7 @@ theorem valid_empty : (empty : Block J).Valid r ∅ := by
   exact ⟨b, rfl, rfl⟩
 
 omit [DecidableEq J] in
-theorem valid_triple {Z : Finset J} (hc : Z.card = 3)
+theorem valid_triple {Z : Finset J} (hc : Z.card = 4)
     (ha : ∀ x ∈ Z, ∀ y ∈ Z, ¬r x y) : (triple : Block J).Valid r Z :=
   ⟨FullBlock.triple ⟨Z,hc⟩ ha, rfl, rfl⟩
 
@@ -78,7 +78,7 @@ def candidate (W F Z : Finset J) : State J :=
 def Compatible (r : J → J → Prop) (W : Finset J) (s : State J) : Prop :=
   (s.left ∪ s.middle) ∪ s.right = W ∧
   Disjoint s.left s.middle ∧ Disjoint s.left s.right ∧ Disjoint s.middle s.right ∧
-  s.middle.card = 3 ∧
+  s.middle.card = 4 ∧
   (∀ x ∈ s.middle, ∀ y ∈ s.middle, ¬r x y) ∧
   (∀ x ∈ s.middle, ∀ y ∈ s.left, ¬r x y) ∧
   (∀ x ∈ s.right, ∀ y ∈ s.left, ¬r x y) ∧
@@ -165,7 +165,7 @@ theorem valid_finish {W : Finset J} {u : State J} {s t : Block J}
 omit [Fintype J] in
 theorem left_card_strict {W : Finset J} {u v : State J}
     (hu : u.Compatible r W) (hsub : u.upto ⊆ v.left) : u.left.card < v.left.card := by
-  have he : u.upto.card = u.left.card + 3 := by
+  have he : u.upto.card = u.left.card + 4 := by
     rw [upto, Finset.card_union_of_disjoint hu.2.1, hu.2.2.2.2.1]
   have := Finset.card_le_card hsub
   omega

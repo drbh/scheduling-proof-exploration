@@ -10,7 +10,7 @@ namespace Structure
 abbrev Layout (J : Type) [Fintype J] := J ≃ Fin (Fintype.card J)
 
 def Layout.time {J : Type} [Fintype J] (p : Layout J) (x : J) : ℕ :=
-  (p x).val / 3 + 1
+  (p x).val / 4 + 1
 
 def Layout.Respects {J : Type} [Fintype J] (p : Layout J)
     (r : J → J → Prop) : Prop :=
@@ -18,7 +18,7 @@ def Layout.Respects {J : Type} [Fintype J] (p : Layout J)
 
 def Layout.Full {J : Type} [Fintype J] (p : Layout J)
     (r : J → J → Prop) : Prop :=
-  3 ∣ Fintype.card J ∧ p.Respects r
+  4 ∣ Fintype.card J ∧ p.Respects r
 
 def Layout.signature {J : Type} [Fintype J] (p : Layout J)
     (priority : J → ℕ) : List ℕ :=

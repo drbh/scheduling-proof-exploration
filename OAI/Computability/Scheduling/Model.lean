@@ -15,7 +15,7 @@ def Instance.acyclic {n : ℕ} (G : Instance n) : Prop :=
 
 def Feasible {n : ℕ} (G : Instance n) (T : ℕ) (τ : Fin n → ℕ) : Prop :=
   (∀ v, 1 ≤ τ v ∧ τ v ≤ T) ∧
-  (∀ t, ((Finset.univ : Finset (Fin n)).filter (fun v => τ v = t)).card ≤ 3) ∧
+  (∀ t, ((Finset.univ : Finset (Fin n)).filter (fun v => τ v = t)).card ≤ 4) ∧
   ∀ u v, G.edge u v → τ u < τ v
 
 def encodeNat (n : ℕ) : List Bool :=
@@ -90,7 +90,7 @@ def ReleaseTheorem : Prop :=
         (∀ T ∈ deadline, 1 ≤ T ∧ T ≤ n) →
         ∃ out, CorrectOutput G deadline out ∧
           M.Produces (encodeInput G deadline) out
-            (C * ((encodeInput G deadline).length + 2) ^ 150020)
+            (C * ((encodeInput G deadline).length + 2) ^ 200022)
 
 end ThreeMachine
 

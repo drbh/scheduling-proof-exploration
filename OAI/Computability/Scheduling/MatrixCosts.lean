@@ -11,10 +11,10 @@ variable (tab : ∀ j, Table (n j)) (fs zs : ∀ j, List (Finset (Fin (n j))))
 variable (W : ∀ j, Finset (Fin (n j)))
 
 theorem solveS
-    (hl : Poly n (fun j => (tab j).length) 30000)
-    (hf : Poly n (fun j => (fs j).length) 30000) (hz : Poly n (fun j => (zs j).length) 3)
+    (hl : Poly n (fun j => (tab j).length) 40000)
+    (hf : Poly n (fun j => (fs j).length) 40000) (hz : Poly n (fun j => (zs j).length) 4)
     (ht : ∀ j, TableSmall (tab j)) :
-    Poly n (fun j => Uniform.solveS.time (n j) (U j,(M j,(tab j,(fs j,(zs j,W j)))))) 120008 := by
+    Poly n (fun j => Uniform.solveS.time (n j) (U j,(M j,(tab j,(fs j,(zs j,W j)))))) 160010 := by
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hfv := Poly.volumeSetList fs (Poly.size n) hf
   have hzv := Poly.volumeSetList zs (Poly.size n) hz
@@ -22,17 +22,17 @@ theorem solveS
   poly_auto
 
 theorem solveMarks
-    (hl : Poly n (fun j => (tab j).length) 30000)
-    (hf : Poly n (fun j => (fs j).length) 30000) (hz : Poly n (fun j => (zs j).length) 3)
+    (hl : Poly n (fun j => (tab j).length) 40000)
+    (hf : Poly n (fun j => (fs j).length) 40000) (hz : Poly n (fun j => (zs j).length) 4)
     (ht : ∀ j, Algorithm.TableGood (matrixRel (M j)) (tab j))
     (hb : ∀ j, Algorithm.TableBounded (tab j)) :
-    Poly n (fun j => Uniform.solveMarks.time (n j) (U j,(M j,(tab j,(fs j,(zs j,W j)))))) 120009 := by
+    Poly n (fun j => Uniform.solveMarks.time (n j) (U j,(M j,(tab j,(fs j,(zs j,W j)))))) 160011 := by
   have hts : ∀ j, TableSmall (tab j) := fun j a b h => blockSmall_of_good (ht j a b h) (hb j a b h)
   have htv := Poly.volumeTable tab (Poly.size n) hl hts
   have hfv := Poly.volumeSetList fs (Poly.size n) hf
   have hzv := Poly.volumeSetList zs (Poly.size n) hz
   let sts j := Algorithm.states (matrixRel (M j)) (fs j) (zs j) (W j)
-  have hsl : Poly n (fun j => (sts j).length) 30003 := by
+  have hsl : Poly n (fun j => (sts j).length) 40004 := by
     apply Poly.of_le (fun j => Algorithm.states_length _ _ _ _)
     poly_bound
   have hsv := Poly.volumeStateList sts (Poly.size n) hsl
@@ -43,23 +43,23 @@ theorem solveMarks
   poly_auto
 
 theorem solveOut
-    (hl : Poly n (fun j => (tab j).length) 30000)
-    (hf : Poly n (fun j => (fs j).length) 30000) (hz : Poly n (fun j => (zs j).length) 3)
+    (hl : Poly n (fun j => (tab j).length) 40000)
+    (hf : Poly n (fun j => (fs j).length) 40000) (hz : Poly n (fun j => (zs j).length) 4)
     (ht : ∀ j, Algorithm.TableGood (matrixRel (M j)) (tab j))
     (hb : ∀ j, Algorithm.TableBounded (tab j)) :
-    Poly n (fun j => Uniform.solveOut.time (n j) (U j,(M j,(tab j,(fs j,(zs j,W j)))))) 120009 := by
+    Poly n (fun j => Uniform.solveOut.time (n j) (U j,(M j,(tab j,(fs j,(zs j,W j)))))) 160011 := by
   have hts : ∀ j, TableSmall (tab j) := fun j a b h => blockSmall_of_good (ht j a b h) (hb j a b h)
   have htv := Poly.volumeTable tab (Poly.size n) hl hts
   have hfv := Poly.volumeSetList fs (Poly.size n) hf
   have hzv := Poly.volumeSetList zs (Poly.size n) hz
   let sts j := Algorithm.states (matrixRel (M j)) (fs j) (zs j) (W j)
-  have hsl : Poly n (fun j => (sts j).length) 30003 := by
+  have hsl : Poly n (fun j => (sts j).length) 40004 := by
     apply Poly.of_le (fun j => Algorithm.states_length _ _ _ _)
     poly_bound
   have hs : ∀ j u, u ∈ sts j → u.Compatible (matrixRel (M j)) (W j) :=
     fun j _ hu => Algorithm.states_compatible _ hu
   let ms j := Algorithm.markings (tab j) (sts j) (n j)
-  have hml : Poly n (fun j => (ms j).length) 30003 :=
+  have hml : Poly n (fun j => (ms j).length) 40004 :=
     Poly.of_le (fun j => Algorithm.markings_length _ _ _) hsl
   have hms (j) : MarksSmall (ms j) := markings_small _ (ht j) (hb j) (hs j) _
   have hmv := Poly.volumeMarks ms (Poly.size n) hml hms
@@ -80,11 +80,11 @@ theorem solveOut
   poly_auto
 
 theorem solve
-    (hl : Poly n (fun j => (tab j).length) 30000)
-    (hf : Poly n (fun j => (fs j).length) 30000) (hz : Poly n (fun j => (zs j).length) 3)
+    (hl : Poly n (fun j => (tab j).length) 40000)
+    (hf : Poly n (fun j => (fs j).length) 40000) (hz : Poly n (fun j => (zs j).length) 4)
     (ht : ∀ j, Algorithm.TableGood (matrixRel (M j)) (tab j))
     (hb : ∀ j, Algorithm.TableBounded (tab j)) :
-    Poly n (fun j => Uniform.solve.time (n j) (U j,(M j,(tab j,(fs j,(zs j,W j)))))) 120009 := by
+    Poly n (fun j => Uniform.solve.time (n j) (U j,(M j,(tab j,(fs j,(zs j,W j)))))) 160011 := by
   have hts : ∀ j, TableSmall (tab j) := fun j a b h => blockSmall_of_good (ht j a b h) (hb j a b h)
   have htv := Poly.volumeTable tab (Poly.size n) hl hts
   have hfv := Poly.volumeSetList fs (Poly.size n) hf
@@ -123,11 +123,11 @@ variable {J : Type} (n : J → ℕ) (U : ∀ j, Universe (n j)) (M : ∀ j, Matr
 variable (tab : ∀ j, Table (n j)) (fs zs : ∀ j, List (Finset (Fin (n j))))
 variable (W : ∀ j, Finset (Fin (n j)))
 theorem layerBody
-    (hl : Poly n (fun j => (tab j).length) 30000)
-    (hf : Poly n (fun j => (fs j).length) 30000) (hz : Poly n (fun j => (zs j).length) 3)
+    (hl : Poly n (fun j => (tab j).length) 40000)
+    (hf : Poly n (fun j => (fs j).length) 40000) (hz : Poly n (fun j => (zs j).length) 4)
     (ht : ∀ j, Algorithm.TableGood (matrixRel (M j)) (tab j))
     (hb : ∀ j, Algorithm.TableBounded (tab j)) :
-    Poly n (fun j => Uniform.layerBody.time (n j) (W j,((U j,(M j,(fs j,zs j))),tab j))) 120009 := by
+    Poly n (fun j => Uniform.layerBody.time (n j) (W j,((U j,(M j,(fs j,zs j))),tab j))) 160011 := by
   have hts : ∀ j, TableSmall (tab j) := fun j a b h => blockSmall_of_good (ht j a b h) (hb j a b h)
   have htv := Poly.volumeTable tab (Poly.size n) hl hts
   have hfv := Poly.volumeSetList fs (Poly.size n) hf

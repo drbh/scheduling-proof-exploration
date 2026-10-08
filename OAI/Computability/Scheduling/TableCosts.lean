@@ -76,10 +76,10 @@ variable (U : ∀ j, Universe (n j)) (tab : ∀ j, Table (n j))
 variable (ms : ∀ j, Marks (n j)) (v : ∀ j, Algorithm.State (Fin (n j)))
 
 theorem expandBody
-    (hl : Poly n (fun j => (tab j).length) 30000)
-    (hml : Poly n (fun j => (ms j).length) 30003)
+    (hl : Poly n (fun j => (tab j).length) 40000)
+    (hml : Poly n (fun j => (ms j).length) 40004)
     (ht : ∀ j, TableSmall (tab j)) (hm : ∀ j, MarksSmall (ms j)) :
-    Poly n (fun j => Uniform.expandBody.time (n j) (v j,(U j,(tab j,ms j)))) 90005 := by
+    Poly n (fun j => Uniform.expandBody.time (n j) (v j,(U j,(tab j,ms j)))) 120006 := by
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hmv := Poly.volumeMarks ms (Poly.size n) hml hm
   have hTry := tryAdvance (fun p : Poly.ListPool ms => n p.1) (fun p => U p.1)
@@ -95,11 +95,11 @@ theorem expandBody
   poly_auto
 
 theorem expand (sts : ∀ j, List (Algorithm.State (Fin (n j))))
-    (hl : Poly n (fun j => (tab j).length) 30000)
-    (hsl : Poly n (fun j => (sts j).length) 30003)
-    (hml : Poly n (fun j => (ms j).length) 30003)
+    (hl : Poly n (fun j => (tab j).length) 40000)
+    (hsl : Poly n (fun j => (sts j).length) 40004)
+    (hml : Poly n (fun j => (ms j).length) 40004)
     (ht : ∀ j, TableSmall (tab j)) (hm : ∀ j, MarksSmall (ms j)) :
-    Poly n (fun j => Uniform.expand.time (n j) (U j,(tab j,(sts j,ms j)))) 120008 := by
+    Poly n (fun j => Uniform.expand.time (n j) (U j,(tab j,(sts j,ms j)))) 160010 := by
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hmv := Poly.volumeMarks ms (Poly.size n) hml hm
   have hsv := Poly.volumeStateList sts (Poly.size n) hsl
@@ -125,11 +125,11 @@ theorem expand (sts : ∀ j, List (Algorithm.State (Fin (n j))))
     cases Algorithm.lookup (ms p.1) p.2.1 <;> rfl
   have hState : Poly (fun p : Poly.ListPool sts => n p.1)
       (fun p => volume p.2.1) 2 := by poly_auto
-  have he : Poly n (fun j => volume (U j,(tab j,ms j))) 30005 := by poly_auto
+  have he : Poly n (fun j => volume (U j,(tab j,ms j))) 40006 := by poly_auto
   have hTable := Poly.tableOfTime Uniform.expandBody n sts (fun j => (U j,(tab j,ms j)))
     hsl hBody hVRun hState hsv he
   have hExact : Poly n (fun j => Uniform.expandBody.tableOfA.time (n j)
-      (sts j,(U j,(tab j,ms j)))) 120008 := hTable
+      (sts j,(U j,(tab j,ms j)))) 160010 := hTable
   poly_auto
 
 end ThreeMachine.StackCompiler.Costs
@@ -177,8 +177,8 @@ end ThreeMachine.StackCompiler.Uniform
 namespace ThreeMachine.StackCompiler.Costs
 variable {J : Type} (n : J → ℕ) (tab : ∀ j, Table (n j))
 theorem initialMarkBody (v : ∀ j, Algorithm.State (Fin (n j)))
-    (hl : Poly n (fun j => (tab j).length) 30000) (ht : ∀ j, TableSmall (tab j)) :
-    Poly n (fun j => Uniform.initialMarkBody.time (n j) (v j,tab j)) 60002 := by
+    (hl : Poly n (fun j => (tab j).length) 40000) (ht : ∀ j, TableSmall (tab j)) :
+    Poly n (fun j => Uniform.initialMarkBody.time (n j) (v j,tab j)) 80002 := by
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hv := Poly.volumeSmallLookup tab (fun j => (v j).left) (Poly.size n) ht
   poly_auto
@@ -211,10 +211,10 @@ variable {J : Type} (n : J → ℕ) (U : ∀ j, Universe (n j)) (tab : ∀ j, Ta
 variable (sts : ∀ j, List (Algorithm.State (Fin (n j))))
 
 theorem initialMarks
-    (hl : Poly n (fun j => (tab j).length) 30000)
-    (hsl : Poly n (fun j => (sts j).length) 30003)
+    (hl : Poly n (fun j => (tab j).length) 40000)
+    (hsl : Poly n (fun j => (sts j).length) 40004)
     (ht : ∀ j, TableSmall (tab j)) :
-    Poly n (fun j => Uniform.initialMarks.time (n j) (tab j,sts j)) 90005 := by
+    Poly n (fun j => Uniform.initialMarks.time (n j) (tab j,sts j)) 120006 := by
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hsv := Poly.volumeStateList sts (Poly.size n) hsl
   have hlook : Poly (fun p : Poly.ListPool sts => n p.1)
@@ -225,20 +225,20 @@ theorem initialMarks
     (fun p => p.2.1) (hl.precomp Sigma.fst) (fun p => ht p.1)
   have hA : Poly (fun p : Poly.ListPool sts => n p.1) (fun p => volume p.2.1) 2 := by poly_auto
   have hTable := Poly.tableOfTime Uniform.initialMarkBody n sts tab hsl hbody hlook hA hsv htv
-  have hExact : Poly n (fun j => Uniform.initialMarkBody.tableOfA.time (n j) (sts j,tab j)) 90005 := hTable
+  have hExact : Poly n (fun j => Uniform.initialMarkBody.tableOfA.time (n j) (sts j,tab j)) 120006 := hTable
   poly_auto
 
 theorem markingsStep (ms : ∀ j, Marks (n j))
-    (hl : Poly n (fun j => (tab j).length) 30000)
-    (hsl : Poly n (fun j => (sts j).length) 30003)
-    (hml : Poly n (fun j => (ms j).length) 30003)
+    (hl : Poly n (fun j => (tab j).length) 40000)
+    (hsl : Poly n (fun j => (sts j).length) 40004)
+    (hml : Poly n (fun j => (ms j).length) 40004)
     (ht : ∀ j, TableSmall (tab j)) (hm : ∀ j, MarksSmall (ms j)) :
-    Poly n (fun j => Uniform.markingsStep.time (n j) ((U j,(tab j,sts j)),ms j)) 120008 := by
+    Poly n (fun j => Uniform.markingsStep.time (n j) ((U j,(tab j,sts j)),ms j)) 160010 := by
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hsv := Poly.volumeStateList sts (Poly.size n) hsl
   have hmv := Poly.volumeMarks ms (Poly.size n) hml hm
   have hev := Poly.volumeExpand tab ms sts (Poly.size n) hsl ht hm
-  have hel : Poly n (fun j => (Algorithm.expand (tab j) (sts j) (ms j)).length) 30003 :=
+  have hel : Poly n (fun j => (Algorithm.expand (tab j) (sts j) (ms j)).length) 40004 :=
     Poly.of_le (fun j => Algorithm.tableOf_length _ _) hsl
   have h := expand n U tab ms sts hl hsl hml ht hm
   poly_auto
@@ -253,18 +253,18 @@ variable (tab : ∀ j, Table (n j)) (sts : ∀ j, List (Algorithm.State (Fin (n 
 variable (W : ∀ j, Finset (Fin (n j)))
 
 theorem markings
-    (hl : Poly n (fun j => (tab j).length) 30000)
-    (hsl : Poly n (fun j => (sts j).length) 30003)
+    (hl : Poly n (fun j => (tab j).length) 40000)
+    (hsl : Poly n (fun j => (sts j).length) 40004)
     (ht : ∀ j, Algorithm.TableGood (matrixRel (M j)) (tab j))
     (hb : ∀ j, Algorithm.TableBounded (tab j))
     (hs : ∀ j u, u ∈ sts j → u.Compatible (matrixRel (M j)) (W j)) :
-    Poly n (fun j => Uniform.markings.time (n j) (n j,(U j,(tab j,sts j)))) 120009 := by
+    Poly n (fun j => Uniform.markings.time (n j) (n j,(U j,(tab j,sts j)))) 160011 := by
   have hts : ∀ j, TableSmall (tab j) := fun j a b h => blockSmall_of_good (ht j a b h) (hb j a b h)
   have htv := Poly.volumeTable tab (Poly.size n) hl hts
   have hsv := Poly.volumeStateList sts (Poly.size n) hsl
   have hInit := initialMarks n tab sts hl hsl hts
   let ms (p : Poly.IterPool n) := Algorithm.markings (tab p.1) (sts p.1) p.2.1
-  have hml : Poly (fun p : Poly.IterPool n => n p.1) (fun p => (ms p).length) 30003 :=
+  have hml : Poly (fun p : Poly.IterPool n => n p.1) (fun p => (ms p).length) 40004 :=
     Poly.of_le (fun p => Algorithm.markings_length _ _ _) (hsl.precomp Sigma.fst)
   have hms (p : Poly.IterPool n) : MarksSmall (ms p) := markings_small (matrixRel (M p.1)) (ht p.1) (hb p.1) (hs p.1) _
   have hmv := Poly.volumeMarks ms ((Poly.size n).precomp Sigma.fst) hml hms
@@ -273,7 +273,7 @@ theorem markings
   have htIter : Poly (fun p : Poly.IterPool n => n p.1)
       (fun p => Uniform.markingsStep.time (n p.1) ((fun q : Uniform.MarkEnv (n p.1) × Marks (n p.1) =>
         (q.1,Algorithm.expand q.1.2.1 q.1.2.2 q.2))^[p.2.1]
-        ((U p.1,(tab p.1,sts p.1)),Algorithm.tableOf (sts p.1) (fun v => Algorithm.lookup (tab p.1) v.left)))) 120008 := by
+        ((U p.1,(tab p.1,sts p.1)),Algorithm.tableOf (sts p.1) (fun v => Algorithm.lookup (tab p.1) v.left)))) 160010 := by
     apply Poly.of_le _ hStep
     intro p
     exact le_of_eq (congrArg (fun q => Uniform.markingsStep.time (n p.1) q)
@@ -281,9 +281,9 @@ theorem markings
   have hvIter : Poly (fun p : Poly.IterPool n => n p.1)
       (fun p => volume ((fun q : Uniform.MarkEnv (n p.1) × Marks (n p.1) =>
         (q.1,Algorithm.expand q.1.2.1 q.1.2.2 q.2))^[p.2.1]
-        ((U p.1,(tab p.1,sts p.1)),Algorithm.tableOf (sts p.1) (fun v => Algorithm.lookup (tab p.1) v.left)))) 30005 := by
+        ((U p.1,(tab p.1,sts p.1)),Algorithm.tableOf (sts p.1) (fun v => Algorithm.lookup (tab p.1) v.left)))) 40006 := by
     have hpair : Poly (fun p : Poly.IterPool n => n p.1)
-        (fun p => volume ((U p.1,(tab p.1,sts p.1)),ms p)) 30005 := by
+        (fun p => volume ((U p.1,(tab p.1,sts p.1)),ms p)) 40006 := by
       have htv' := htv.precomp (fun p : Poly.IterPool n => p.1)
       have hsv' := hsv.precomp (fun p : Poly.IterPool n => p.1)
       poly_auto
@@ -293,10 +293,10 @@ theorem markings
   have hIter := Poly.iterateTime Uniform.markingsStep n n
     (fun j => ((U j,(tab j,sts j)),Algorithm.tableOf (sts j) (fun v => Algorithm.lookup (tab j) v.left)))
     (Poly.size n) htIter hvIter
-  have hmi : Poly n (fun j => volume (Algorithm.tableOf (sts j) (fun v => Algorithm.lookup (tab j) v.left))) 30005 := by
-    have hml : Poly n (fun j => (Algorithm.markings (tab j) (sts j) 0).length) 30003 :=
+  have hmi : Poly n (fun j => volume (Algorithm.tableOf (sts j) (fun v => Algorithm.lookup (tab j) v.left))) 40006 := by
+    have hml : Poly n (fun j => (Algorithm.markings (tab j) (sts j) 0).length) 40004 :=
       Poly.of_le (fun j => Algorithm.markings_length _ _ _) hsl
-    exact Poly.volumeMarks (d := 1) (l := 30003) (fun j => Algorithm.markings (tab j) (sts j) 0) (Poly.size n) hml
+    exact Poly.volumeMarks (d := 1) (l := 40004) (fun j => Algorithm.markings (tab j) (sts j) 0) (Poly.size n) hml
       (fun j => markings_small _ (ht j) (hb j) (hs j) 0)
   have hFinal := hvIter.precomp (fun j : J => (⟨j,⟨n j,by omega⟩⟩ : Poly.IterPool n))
   poly_auto

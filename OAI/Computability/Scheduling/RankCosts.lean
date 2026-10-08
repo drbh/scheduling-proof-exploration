@@ -109,10 +109,10 @@ end
 
 section
 namespace ThreeMachine.StackCompiler.Uniform
-def triplesE := (universeList.pair (universeList.pair universeList |>.comp product)).comp product
+def triplesE := (universeList.pair (universeList.pair (universeList.pair universeList |>.comp product) |>.comp product)).comp product
 def triplesA := (triplesE.pair id).comp (swap.comp tripleSet).map
-def triplesP : Uniform (fun n (x : Finset (Fin n) × Unit) => decide (x.1.card = 3)) :=
-  (((fst.comp setCard).pair (constant 3)).comp (Realizer.eqNat.uniform ℕ))
+def triplesP : Uniform (fun n (x : Finset (Fin n) × Unit) => decide (x.1.card = 4)) :=
+  (((fst.comp setCard).pair (constant 4)).comp (Realizer.eqNat.uniform ℕ))
 theorem time_triples (n : ℕ) (x : Universe n) :
     triples.time n x = ((triplesA.pair unit).comp triplesP.filter).time n x := rfl
 
@@ -172,7 +172,7 @@ theorem cones (frame : Bool) (ks : List (Fin 5)) :
     have htr := Poly.lengthTriples (Poly.size (fun x : Σ n, Universe n × Matrix n => x.1))
     have hlen : Poly (fun x : Σ n, Universe n × Matrix n => x.1)
         (fun x => (ks.flatMap (fun k =>
-          ((Structure.tripleList (List.finRange x.1)).map Subtype.val).map (coneSet x.2.2 frame k))).length) 3 := by
+          ((Structure.tripleList (List.finRange x.1)).map Subtype.val).map (coneSet x.2.2 frame k))).length) 4 := by
       have he (x : Σ n, Universe n × Matrix n) :
           (ks.flatMap (fun k => ((Structure.tripleList (List.finRange x.1)).map Subtype.val).map (coneSet x.2.2 frame k))).length =
           ks.length*(Structure.tripleList (List.finRange x.1)).length := by simp [List.length_flatMap]

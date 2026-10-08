@@ -34,7 +34,7 @@ def requestRawBound (x : RequestData.Index) : ℕ :=
   2000*(Uniform.requestAnswer.time x.1 x.2+(RequestData.bits x).length+
     (Algorithm.output x.2.graph x.2.deadline).length+1)
 
-theorem requestRawBound_poly : Poly RequestData.size requestRawBound 150011 := by
+theorem requestRawBound_poly : Poly RequestData.size requestRawBound 200013 := by
   have ht := Costs.requestAnswer
   have hb := RequestData.bitsPoly
   have ho := Costs.requestOutputLength
@@ -44,7 +44,7 @@ theorem requestRawBound_poly : Poly RequestData.size requestRawBound 150011 := b
 abbrev SmallDeadline := {x : RequestData.Index // x.2.deadline.getD 0 ≤ x.1}
 
 theorem requestRawBound_length : Poly (fun x : SmallDeadline => (RequestData.bits x.1).length)
-    (fun x => requestRawBound x.1) 150020 := by
+    (fun x => requestRawBound x.1) 200022 := by
   let s (x : SmallDeadline) := (RequestData.bits x.1).length
   have hsize : Poly s (fun x => RequestData.size x.1) 1 := by
     apply Poly.of_le (fun x : SmallDeadline => requestSize_le x.1.2 x.2)
@@ -71,14 +71,14 @@ theorem main_theorem : ReleaseTheorem := by
   have hr := hM n x
   have hb : 2000*(Uniform.requestAnswer.time n x+
       (encodeInput G deadline).length+(Algorithm.output G deadline).length+1) ≤
-        (C+1)*((encodeInput G deadline).length+2)^150020 := by
+        (C+1)*((encodeInput G deadline).length+2)^200022 := by
     calc
       _ = requestRawBound y.1 := rfl
-      _ ≤ C*((encodeInput G deadline).length+2)^150020 := by
+      _ ≤ C*((encodeInput G deadline).length+2)^200022 := by
         have hy := hC y
         dsimp only [RequestData.bits,y,x] at hy
         exact hy
-      _ ≤ (C+1)*((encodeInput G deadline).length+2)^150020 :=
+      _ ≤ (C+1)*((encodeInput G deadline).length+2)^200022 :=
         Nat.mul_le_mul_right _ (Nat.le_succ C)
   obtain ⟨t,ht,halt,out⟩ := hr
   exact ⟨t,ht.trans hb,halt,out⟩

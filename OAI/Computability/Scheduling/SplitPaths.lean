@@ -206,7 +206,7 @@ theorem before_small (hA : AtomSupport atoms r rank) {H : Set J} {k : ℕ}
 
 noncomputable def SplitVertex.ofTime {a b s k : ℕ} {Z : Triple J} {F : Set J}
     (hp : p.Full r) (hW : ∀ x, x ∈ W ↔ x ∈ Window p.time a b)
-    (hs : a < s ∧ s < b) (hZ : (Boundary.actual Z).At p.time (Fintype.card J / 3) s)
+    (hs : a < s ∧ s < b) (hZ : (Boundary.actual Z).At p.time (Fintype.card J / 4) s)
     (hF : Described atoms F k) (hk : k+1 ≤ 10000)
     (hZA : Described atoms (Z.val : Set J) 1)
     (hbefore : ∀ x ∈ W, x ∈ F ↔ p.time x < s) : SplitVertex r atoms W := by
@@ -282,7 +282,7 @@ noncomputable def SplitVertex.ofTime {a b s k : ℕ} {Z : Triple J} {F : Set J}
 
 theorem SplitVertex.ofTime_at {a b s k : ℕ} {Z : Triple J} {F : Set J}
     (hp : p.Full r) (hW : ∀ x, x ∈ W ↔ x ∈ Window p.time a b)
-    (hs : a < s ∧ s < b) (hZ : (Boundary.actual Z).At p.time (Fintype.card J / 3) s)
+    (hs : a < s ∧ s < b) (hZ : (Boundary.actual Z).At p.time (Fintype.card J / 4) s)
     (hF : Described atoms F k) (hk : k+1 ≤ 10000)
     (hZA : Described atoms (Z.val : Set J) 1)
     (hbefore : ∀ x ∈ W, x ∈ F ↔ p.time x < s) :
@@ -450,7 +450,7 @@ theorem NumericWalkData.reached {E : Finset J} {time priority : J → ℕ} {a lo
 
 theorem separator_at {E : Finset J} {S : Set J} {s a v : ℕ}
     (hp : p.Full r) (hE : ∀ x, x ∈ E ↔ x ∈ Window p.time a v)
-    (hs : 1 ≤ s ∧ s ≤ Fintype.card J / 3)
+    (hs : 1 ≤ s ∧ s ≤ Fintype.card J / 4)
     (hsep : Separator E r p.time S s) :
     (Boundary.actual (p.triple hp.1 s hs.1 hs.2)).Separates r p.time
       (Window p.time a v) S s := by
@@ -464,15 +464,15 @@ theorem Boundary.Separates.mono_domain {time : J → ℕ} {U S : Set J} {B : Bou
   ⟨fun x hx ht hn => h.1 x (hUW hx) ht hn, fun x hx ht hs => h.2 x (hUW hx) ht hs⟩
 
 theorem Boundary.at_bounds {B : Boundary J} {s : ℕ}
-    (h : B.At p.time (Fintype.card J / 3) s) : s ≤ Fintype.card J / 3 + 1 := by
+    (h : B.At p.time (Fintype.card J / 4) s) : s ≤ Fintype.card J / 4 + 1 := by
   cases B with
   | left => dsimp [At] at h; omega
   | right => exact h.le
   | actual Z => exact h.2.1.trans (Nat.le_succ _)
 
 theorem Boundary.actual_of_interior {B : Boundary J} {s : ℕ}
-    (h : B.At p.time (Fintype.card J / 3) s)
-    (hs : 1 ≤ s ∧ s ≤ Fintype.card J / 3) : ∃ Z, B = Boundary.actual Z := by
+    (h : B.At p.time (Fintype.card J / 4) s)
+    (hs : 1 ≤ s ∧ s ≤ Fintype.card J / 4) : ∃ Z, B = Boundary.actual Z := by
   cases B with
   | left => dsimp [At] at h; omega
   | right => dsimp [At] at h; omega

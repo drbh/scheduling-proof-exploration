@@ -170,24 +170,24 @@ section EffectiveAlphabet
 variable {J : Type} [Fintype J] [DecidableEq J]
 
 def tripleList (jobs : List J) : List (Triple J) :=
-  (jobs.flatMap (fun a => jobs.flatMap (fun b => jobs.map (fun c => ({a,b,c} : Finset J))))).filterMap
-    (fun Z => if h : Z.card = 3 then some ⟨Z, h⟩ else none)
+  (jobs.flatMap (fun a => jobs.flatMap (fun b => jobs.flatMap (fun c => jobs.map (fun d => ({a,b,c,d} : Finset J)))))).filterMap
+    (fun Z => if h : Z.card = 4 then some ⟨Z, h⟩ else none)
 
 omit [Fintype J] in
 theorem mem_tripleList (jobs : List J) (hjobs : ∀ x, x ∈ jobs) (Z : Triple J) :
     Z ∈ tripleList jobs := by
-  obtain ⟨a,b,c,_,_,_,he⟩ := Finset.card_eq_three.mp Z.property
+  obtain ⟨a,b,c,d,_,_,_,_,_,_,he⟩ := Finset.card_eq_four.mp Z.property
   apply List.mem_filterMap.mpr
   refine ⟨Z.val, List.mem_flatMap.mpr ⟨a, hjobs a,
-    List.mem_flatMap.mpr ⟨b, hjobs b, List.mem_map.mpr ⟨c, hjobs c, he.symm⟩⟩⟩, ?_⟩
+    List.mem_flatMap.mpr ⟨b, hjobs b, List.mem_flatMap.mpr ⟨c, hjobs c, List.mem_map.mpr ⟨d, hjobs d, he.symm⟩⟩⟩⟩, ?_⟩
   simp only [dite_eq_left Z.property]
 
 omit [Fintype J] in
-theorem tripleList_length (jobs : List J) : (tripleList jobs).length ≤ jobs.length ^ 3 := by
+theorem tripleList_length (jobs : List J) : (tripleList jobs).length ≤ jobs.length ^ 4 := by
   calc
-    _ ≤ (jobs.flatMap (fun a => jobs.flatMap (fun b => jobs.map
-          (fun c => ({a,b,c} : Finset J))))).length := List.length_filterMap_le _ _
-    _ = jobs.length ^ 3 := by simp [List.length_flatMap, pow_succ, Nat.mul_assoc]
+    _ ≤ (jobs.flatMap (fun a => jobs.flatMap (fun b => jobs.flatMap (fun c => jobs.map
+          (fun d => ({a,b,c,d} : Finset J)))))).length := List.length_filterMap_le _ _
+    _ = jobs.length ^ 4 := by simp [List.length_flatMap, pow_succ, Nat.mul_assoc]
 
 def Atomic.alphabet (jobs : List J) : List (Atomic J) :=
   [.constant false, .constant true] ++
@@ -213,7 +213,7 @@ theorem Atomic.mem_alphabet (jobs : List J) (hjobs : ∀ x, x ∈ jobs) (a : Ato
       ⟨kind, List.mem_finRange _, List.mem_map.mpr ⟨Z, mem_tripleList jobs hjobs Z, rfl⟩⟩⟩
 
 theorem Atomic.alphabet_length (jobs : List J) :
-    (alphabet jobs).length ≤ 2 + 4*(Fintype.card J+2) + 10*jobs.length^3 := by
+    (alphabet jobs).length ≤ 2 + 4*(Fintype.card J+2) + 10*jobs.length^4 := by
   have h := tripleList_length jobs
   have he : (alphabet jobs).length = 2 + 4*(Fintype.card J+2) + 10*(tripleList jobs).length := by
     simp [alphabet, List.finRange_succ, Nat.mul_add]
@@ -222,7 +222,7 @@ theorem Atomic.alphabet_length (jobs : List J) :
   omega
 
 theorem Atomic.alphabet_polynomial (n : ℕ) :
-    (alphabet (List.finRange n)).length ≤ 20*(n+2)^3 := by
+    (alphabet (List.finRange n)).length ≤ 20*(n+2)^4 := by
   have h := alphabet_length (List.finRange n)
   simp only [Fintype.card_fin, List.length_finRange] at h
   nlinarith [sq_nonneg (n : ℤ)]

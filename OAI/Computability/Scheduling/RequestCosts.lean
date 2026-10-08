@@ -221,7 +221,7 @@ section
 namespace ThreeMachine.StackCompiler.Costs
 open RequestData
 
-theorem requestAnswer : Poly size (fun x : Index => Uniform.requestAnswer.time x.1 x.2) 150011 := by
+theorem requestAnswer : Poly size (fun x : Index => Uniform.requestAnswer.time x.1 x.2) 200013 := by
   let U (x : Index) : Universe x.1 := Universe.mk ()
   have hParse := parseRequest
   have hRequest := volumeRequest

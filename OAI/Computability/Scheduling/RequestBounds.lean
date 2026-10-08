@@ -7,15 +7,15 @@ namespace ThreeMachine.StackCompiler.Costs
 variable {J : Type} (s n : J → ℕ) (U : ∀ j, Universe (n j)) (M : ∀ j, Matrix (n j))
 theorem answerMatrix (d : J → Option ℕ) (hn : Poly s n 1)
     (hd : Poly s (fun j => (d j).getD 0) 1) :
-    Poly s (fun j => Uniform.answerMatrix.time (n j) (U j,(M j,d j))) 150011 := by
+    Poly s (fun j => Uniform.answerMatrix.time (n j) (U j,(M j,d j))) 200013 := by
   have hD : Poly s (fun j => volume (d j)) 1 := by
     apply Poly.of_le (fun j : J => volume_option_le_getD (d j) 0)
     have hv := Poly.volumeNat hd
     poly_auto
   have hS := Poly.volumeSchedule s n (fun j => (d j).getD 0) M hn hd
   have hB := Poly.volumeBest s n n M hn hn
-  have hST : Poly s (fun j => Uniform.scheduleMatrix.time (n j) (U j,((d j).getD 0,M j))) 150010 :=
-    Poly.reparam (r := 1) (d := 150010) scheduleMatrix
+  have hST : Poly s (fun j => Uniform.scheduleMatrix.time (n j) (U j,((d j).getD 0,M j))) 200012 :=
+    Poly.reparam (r := 1) (d := 200012) scheduleMatrix
       (fun j => ⟨n j,(U j,((d j).getD 0,M j))⟩) (hn.add hd)
   have hSV : Poly s (fun j => volume ((ThreeMachine.StackCompiler.scheduleMatrix (M j) ((d j).getD 0)).map List.ofFn)) 2 := by
     simpa only [volume_optionFunctionList] using hS
@@ -27,7 +27,7 @@ theorem answerMatrix (d : J → Option ℕ) (hn : Poly s n 1)
 theorem unaryAnswer (G : ∀ j, Instance (n j)) (d : J → Option ℕ)
     (hn : Poly s n 1) (he : Poly s (fun j => (G j).edges.length) 1)
     (hd : Poly s (fun j => (d j).getD 0) 1) :
-    Poly s (fun j => Uniform.unaryAnswer.time (n j) (U j,(G j,d j))) 150011 := by
+    Poly s (fun j => Uniform.unaryAnswer.time (n j) (U j,(G j,d j))) 200013 := by
   have hD : Poly s (fun j => volume (d j)) 1 := by
     apply Poly.of_le (fun j : J => volume_option_le_getD (d j) 0)
     have hv := Poly.volumeNat hd

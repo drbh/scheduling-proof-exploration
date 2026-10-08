@@ -17,7 +17,7 @@ theorem EdgeData.child_ssubset {a b v ap bp : ℕ} {B V A' B' : Boundary J}
     intro x hx
     rw [D.parent]
     exact ⟨D.start_le.trans_lt hx.1, (hx.2.trans_le D.target_le).trans D.center_lt⟩
-  have hv : 1 ≤ v ∧ v ≤ Fintype.card J / 3 := by
+  have hv : 1 ≤ v ∧ v ≤ Fintype.card J / 4 := by
     have := Boundary.at_bounds D.endAt
     have := D.start_le
     have := D.strict
@@ -61,7 +61,7 @@ theorem same_path_normalized (D : NodeData r rank atoms p W)
     (hB : 0 < B) (hrank : ∀ x, rank x < B) (hinj : Function.Injective rank)
     (hstrict : ∀ x y, r x y → rank x < rank y)
     (hv : D.a < v ∧ v < D.b)
-    (hV : V.At p.time (Fintype.card J / 3) v)
+    (hV : V.At p.time (Fintype.card J / 4) v)
     (hcenter : V.Separates r p.time W (D.right.pred r) v)
     (hnorm : p.NormalizedOn (Window p.time D.a v) r
       (D.list.samePriority rank B (D.right.pred r)))
@@ -84,14 +84,14 @@ theorem same_path_normalized (D : NodeData r rank atoms p W)
       (PriorityCut priority (B+count)) v :=
     (Boundary.separates_congr (fun x hx => (hfinalAgree x hx).symm)).mp
       (hcenter.mono_domain hsub)
-  have hvbounds : 1 ≤ v ∧ v ≤ Fintype.card J / 3 := by
+  have hvbounds : 1 ≤ v ∧ v ≤ Fintype.card J / 4 := by
     have := Boundary.at_bounds D.rightAt
     omega
   have hVactual := Boundary.actual_of_interior hV hvbounds
   have hedge {ap bp t : ℕ} {A' B' : Boundary J}
       (hap : D.a ≤ ap) (hab : ap < bp) (hbp : bp ≤ v)
-      (hAA : A'.At p.time (Fintype.card J / 3) ap)
-      (hBB : B'.At p.time (Fintype.card J / 3) bp)
+      (hAA : A'.At p.time (Fintype.card J / 4) ap)
+      (hBB : B'.At p.time (Fintype.card J / 4) bp)
       (hact : ∃ Z, B' = Boundary.actual Z) (ht : t ≤ count)
       (hstart : A'.Separates r p.time (Window p.time D.a v)
         (PriorityCut priority (B+t)) ap)
@@ -109,7 +109,7 @@ theorem same_path_normalized (D : NodeData r rank atoms p W)
     apply hedge le_rfl hv.1 le_rfl D.leftAt hV hVactual le_rfl _ hfinalSep .refl (Or.inl rfl)
     rw [hL, ha]
     exact Boundary.left_separates
-  · have habounds : 1 ≤ D.a ∧ D.a ≤ Fintype.card J / 3 := by omega
+  · have habounds : 1 ≤ D.a ∧ D.a ≤ Fintype.card J / 4 := by omega
     obtain ⟨Z, hZ⟩ := Boundary.actual_of_interior D.leftAt habounds
     have hstartBoundary : D.left.Separates r p.time (Window p.time D.a v)
         (PriorityCut priority B) D.a := by
@@ -149,10 +149,10 @@ theorem same_path_normalized (D : NodeData r rank atoms p W)
     apply walk.reached hpos
     · intro i bp hab hbp hsep hprev
       have hap := (walk.history i).le
-      have haps : 1 ≤ walk.position i ∧ walk.position i ≤ Fintype.card J / 3 := by
+      have haps : 1 ≤ walk.position i ∧ walk.position i ≤ Fintype.card J / 4 := by
         have := hpos i
         omega
-      have hbps : 1 ≤ bp ∧ bp ≤ Fintype.card J / 3 := by omega
+      have hbps : 1 ≤ bp ∧ bp ≤ Fintype.card J / 4 := by omega
       exact hedge hap hab hbp (p.triple_at D.full.1 _ haps.1 haps.2)
         (p.triple_at D.full.1 _ hbps.1 hbps.2) ⟨_, rfl⟩ (by have := i.isLt; omega)
         (separator_at D.full hE haps (walk.separator i))
@@ -196,11 +196,11 @@ theorem switch_path_normalized {a b v B : ℕ} {L R V : Boundary J}
     (hA : AtomSupport atoms r rank) (hrank : ∀ x, rank x < B)
     (hinj : Function.Injective rank) (hstrict : ∀ x y, r x y → rank x < rank y)
     (hW : ∀ x, x ∈ W ↔ x ∈ Window p.time a b)
-    (hL : L.At p.time (Fintype.card J / 3) a)
-    (hR : R.At p.time (Fintype.card J / 3) b)
+    (hL : L.At p.time (Fintype.card J / 4) a)
+    (hR : R.At p.time (Fintype.card J / 4) b)
     (hcover : ∀ x ∈ W, x ∈ L.desc r ∨ x ∈ R.pred r)
     (G : SwitchSeed r p.time atoms W L a)
-    (hv : a < v ∧ v < b) (hV : V.At p.time (Fintype.card J / 3) v)
+    (hv : a < v ∧ v < b) (hV : V.At p.time (Fintype.card J / 4) v)
     (hcenter : V.Separates r p.time W (L.desc r)ᶜ v)
     (hnorm : p.NormalizedOn (Window p.time a v) r (switchPriority rank B (L.desc r)))
     (hchild : ∀ U, U ⊂ W → Nonempty (NodeData r rank atoms p U) → P U) :
@@ -217,14 +217,14 @@ theorem switch_path_normalized {a b v B : ℕ} {L R V : Boundary J}
       (PriorityCut priority B) v := by
     rw [show PriorityCut priority B = (L.desc r)ᶜ from switchPriority_final hrank]
     exact hcenter.mono_domain hsub
-  have hvbounds : 1 ≤ v ∧ v ≤ Fintype.card J / 3 := by
+  have hvbounds : 1 ≤ v ∧ v ≤ Fintype.card J / 4 := by
     have := Boundary.at_bounds hR
     omega
   have hVactual := Boundary.actual_of_interior hV hvbounds
   have hedge {ap bp t : ℕ} {A' B' : Boundary J}
       (hap : a ≤ ap) (hab : ap < bp) (hbp : bp ≤ v)
-      (hAA : A'.At p.time (Fintype.card J / 3) ap)
-      (hBB : B'.At p.time (Fintype.card J / 3) bp)
+      (hAA : A'.At p.time (Fintype.card J / 4) ap)
+      (hBB : B'.At p.time (Fintype.card J / 4) bp)
       (hact : ∃ Z, B' = Boundary.actual Z) (ht : t ≤ B)
       (hstart : A'.Separates r p.time (Window p.time a v) (PriorityCut priority t) ap)
       (hend : B'.Separates r p.time (Window p.time a v) (PriorityCut priority t) bp)
@@ -239,7 +239,7 @@ theorem switch_path_normalized {a b v B : ℕ} {L R V : Boundary J}
     apply hedge le_rfl hv.1 le_rfl hL hV hVactual le_rfl _ hfinalSep (Or.inl rfl)
     rw [hLL, ha]
     exact Boundary.left_separates
-  · have habounds : 1 ≤ a ∧ a ≤ Fintype.card J / 3 := by omega
+  · have habounds : 1 ≤ a ∧ a ≤ Fintype.card J / 4 := by omega
     have hstart : Separator E r p.time (PriorityCut priority 0) a := by
       constructor
       · intro x hx ht _
@@ -267,10 +267,10 @@ theorem switch_path_normalized {a b v B : ℕ} {L R V : Boundary J}
     apply walk.reached hpos
     · intro i bp hab hbp hsep hprev
       have hap := (walk.history i).le
-      have haps : 1 ≤ walk.position i ∧ walk.position i ≤ Fintype.card J / 3 := by
+      have haps : 1 ≤ walk.position i ∧ walk.position i ≤ Fintype.card J / 4 := by
         have := hpos i
         omega
-      have hbps : 1 ≤ bp ∧ bp ≤ Fintype.card J / 3 := by omega
+      have hbps : 1 ≤ bp ∧ bp ≤ Fintype.card J / 4 := by omega
       exact hedge (t := i.val) hap hab hbp (p.triple_at hp.1 _ haps.1 haps.2)
         (p.triple_at hp.1 _ hbps.1 hbps.2) ⟨_, rfl⟩ (by have := i.isLt; omega)
         (separator_at hp hE haps (by simpa only [Nat.zero_add] using walk.separator i))
@@ -294,7 +294,7 @@ theorem same_path (D : NodeData r rank atoms p W)
     (hB : 0 < B) (hrank : ∀ x, rank x < B) (hinj : Function.Injective rank)
     (hstrict : ∀ x y, r x y → rank x < rank y)
     (hv : D.a < v ∧ v < D.b)
-    (hV : V.At p.time (Fintype.card J / 3) v)
+    (hV : V.At p.time (Fintype.card J / 4) v)
     (hcenter : V.Separates r p.time W (D.right.pred r) v)
     (hchild : ∀ q U, U ⊂ W → Nonempty (NodeData r rank atoms q U) → P U) :
     Reached P r atoms W p.time D.a v := by
@@ -322,11 +322,11 @@ theorem switch_path {a b v B : ℕ} {L R V : Boundary J}
     (hA : AtomSupport atoms r rank) (hrank : ∀ x, rank x < B)
     (hinj : Function.Injective rank) (hstrict : ∀ x y, r x y → rank x < rank y)
     (hW : ∀ x, x ∈ W ↔ x ∈ Window p.time a b)
-    (hL : L.At p.time (Fintype.card J / 3) a)
-    (hR : R.At p.time (Fintype.card J / 3) b)
+    (hL : L.At p.time (Fintype.card J / 4) a)
+    (hR : R.At p.time (Fintype.card J / 4) b)
     (hcover : ∀ x ∈ W, x ∈ L.desc r ∨ x ∈ R.pred r)
     (G : SwitchSeed r p.time atoms W L a)
-    (hv : a < v ∧ v < b) (hV : V.At p.time (Fintype.card J / 3) v)
+    (hv : a < v ∧ v < b) (hV : V.At p.time (Fintype.card J / 4) v)
     (hcenter : V.Separates r p.time W (L.desc r)ᶜ v)
     (hchild : ∀ q U, U ⊂ W → Nonempty (NodeData r rank atoms q U) → P U) :
     Reached P r atoms W p.time a v := by
@@ -358,10 +358,10 @@ variable {J A : Type} [Fintype J] {r : J → J → Prop}
     {atoms : A → Set J} {p : Layout J} {W S : Set J}
 
 theorem Boundary.Separates.reverse {B : Boundary J} {s : ℕ}
-    (hfull : 3 ∣ Fintype.card J) (hs : s ≤ Fintype.card J / 3 + 1)
+    (hfull : 4 ∣ Fintype.card J) (hs : s ≤ Fintype.card J / 4 + 1)
     (h : B.Separates r p.time W S s) :
     B.reverse.Separates (fun x y => r y x) p.reverse.time W Sᶜ
-      (Fintype.card J / 3 + 1 - s) := by
+      (Fintype.card J / 4 + 1 - s) := by
   constructor
   · intro x hx ht hn
     have hxbound := p.time_bounds hfull x
@@ -376,9 +376,9 @@ theorem Boundary.Separates.reverse {B : Boundary J} {s : ℕ}
     simpa only [Boundary.desc_reverse] using h.1 x hx hl hn
 
 theorem SplitVertex.AtTime.reverse {u : SplitVertex r atoms W} {s : ℕ}
-    (hfull : 3 ∣ Fintype.card J) (hs : s ≤ Fintype.card J / 3 + 1)
+    (hfull : 4 ∣ Fintype.card J) (hs : s ≤ Fintype.card J / 4 + 1)
     (h : u.AtTime p.time s) :
-    u.reverse.AtTime p.reverse.time (Fintype.card J / 3 + 1 - s) := by
+    u.reverse.AtTime p.reverse.time (Fintype.card J / 4 + 1 - s) := by
   constructor
   · intro x
     change x ∈ u.right ↔ _
@@ -403,9 +403,9 @@ theorem SplitVertex.AtTime.reverse {u : SplitVertex r atoms W} {s : ℕ}
       intro _
       omega
 
-theorem window_reverse {a b : ℕ} (hfull : 3 ∣ Fintype.card J)
-    (ha : a ≤ Fintype.card J / 3 + 1) (hb : b ≤ Fintype.card J / 3 + 1) :
-    Window p.reverse.time (Fintype.card J / 3 + 1 - b) (Fintype.card J / 3 + 1 - a) =
+theorem window_reverse {a b : ℕ} (hfull : 4 ∣ Fintype.card J)
+    (ha : a ≤ Fintype.card J / 4 + 1) (hb : b ≤ Fintype.card J / 4 + 1) :
+    Window p.reverse.time (Fintype.card J / 4 + 1 - b) (Fintype.card J / 4 + 1 - a) =
       Window p.time a b := by
   ext x
   change (_ < p.reverse.time x ∧ p.reverse.time x < _) ↔ _ < p.time x ∧ p.time x < _
@@ -459,7 +459,7 @@ theorem node_complete (n : ℕ) :
         (fun {_ _ _} hxy hyz => htrans hyz hxy) hAR hA hB hrankR hrank
         hinjR hinj hstrictR hstrict DU (by omega)
     have hleft := same_path Dq htrans hA hB hrank hinj hstrict ⟨hav, hvb⟩ hV hcenter hchild
-    let T := Fintype.card J / 3
+    let T := Fintype.card J / 4
     have ha : D.a ≤ T+1 := Boundary.at_bounds D.leftAt
     have hb : D.b ≤ T+1 := Boundary.at_bounds D.rightAt
     have hv : v ≤ T+1 := by omega

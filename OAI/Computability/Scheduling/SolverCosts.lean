@@ -10,25 +10,25 @@ variable (u : ∀ j, Algorithm.State (Fin (n j)) × Algorithm.Block (Fin (n j)))
 variable (v : ∀ j, Algorithm.State (Fin (n j)))
 
 theorem tryW
-    (hl : Poly n (fun j => (tab j).length) 30000)
+    (hl : Poly n (fun j => (tab j).length) 40000)
     (ht : ∀ j, TableSmall (tab j)) (hb : ∀ j, BlockSmall (u j).2) :
-    Poly n (fun j => Uniform.tryW.time (n j) (U j,(tab j,(u j,v j)))) 30002 := by
+    Poly n (fun j => Uniform.tryW.time (n j) (U j,(tab j,(u j,v j)))) 40002 := by
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hbV := Poly.volumeSmallBlock (fun j => (u j).2) (Poly.size n) hb
   poly_auto
 
 theorem tryL
-    (hl : Poly n (fun j => (tab j).length) 30000)
+    (hl : Poly n (fun j => (tab j).length) 40000)
     (ht : ∀ j, TableSmall (tab j)) (hb : ∀ j, BlockSmall (u j).2) :
-    Poly n (fun j => Uniform.tryL.time (n j) (U j,(tab j,(u j,v j)))) 30002 := by
+    Poly n (fun j => Uniform.tryL.time (n j) (U j,(tab j,(u j,v j)))) 40002 := by
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hbV := Poly.volumeSmallBlock (fun j => (u j).2) (Poly.size n) hb
   poly_auto
 
 theorem tryP
-    (hl : Poly n (fun j => (tab j).length) 30000)
+    (hl : Poly n (fun j => (tab j).length) 40000)
     (ht : ∀ j, TableSmall (tab j)) (hb : ∀ j, BlockSmall (u j).2) :
-    Poly n (fun j => Uniform.tryP.time (n j) (U j,(tab j,(u j,v j)))) 30002 := by
+    Poly n (fun j => Uniform.tryP.time (n j) (U j,(tab j,(u j,v j)))) 40002 := by
   have hW := tryW n U tab u v hl ht hb
   have hL := tryL n U tab u v hl ht hb
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
@@ -36,9 +36,9 @@ theorem tryP
   poly_auto
 
 theorem tryDiff
-    (hl : Poly n (fun j => (tab j).length) 30000)
+    (hl : Poly n (fun j => (tab j).length) 40000)
     (ht : ∀ j, TableSmall (tab j)) (hb : ∀ j, BlockSmall (u j).2) :
-    Poly n (fun j => Uniform.tryDiff.time (n j) (U j,(tab j,(u j,v j)))) 30002 := by
+    Poly n (fun j => Uniform.tryDiff.time (n j) (U j,(tab j,(u j,v j)))) 40002 := by
   have hW := tryW n U tab u v hl ht hb
   have hL := tryL n U tab u v hl ht hb
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
@@ -46,18 +46,18 @@ theorem tryDiff
   poly_auto
 
 theorem tryO
-    (hl : Poly n (fun j => (tab j).length) 30000)
+    (hl : Poly n (fun j => (tab j).length) 40000)
     (ht : ∀ j, TableSmall (tab j)) (hb : ∀ j, BlockSmall (u j).2) :
-    Poly n (fun j => Uniform.tryO.time (n j) (U j,(tab j,(u j,v j)))) 60002 := by
+    Poly n (fun j => Uniform.tryO.time (n j) (U j,(tab j,(u j,v j)))) 80002 := by
   have hD := tryDiff n U tab u v hl ht hb
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hbV := Poly.volumeSmallBlock (fun j => (u j).2) (Poly.size n) hb
   poly_auto
 
 theorem tryWork
-    (hl : Poly n (fun j => (tab j).length) 30000)
+    (hl : Poly n (fun j => (tab j).length) 40000)
     (ht : ∀ j, TableSmall (tab j)) (hb : ∀ j, BlockSmall (u j).2) :
-    Poly n (fun j => Uniform.tryWork.time (n j) (U j,(tab j,(u j,v j)))) 60002 := by
+    Poly n (fun j => Uniform.tryWork.time (n j) (U j,(tab j,(u j,v j)))) 80002 := by
   have hO := tryO n U tab u v hl ht hb
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hbV : Poly n (fun j => volume (u j).2) 2 := Poly.volumeSmallBlock _ (Poly.size n) hb
@@ -75,9 +75,9 @@ theorem tryWork
     exact ht p.1 _ _ (Algorithm.lookup_mem (by simpa using p.2.2))
   poly_auto
 theorem tryAdvance
-    (hl : Poly n (fun j => (tab j).length) 30000)
+    (hl : Poly n (fun j => (tab j).length) 40000)
     (ht : ∀ j, TableSmall (tab j)) (hb : ∀ j, BlockSmall (u j).2) :
-    Poly n (fun j => Uniform.tryAdvance.time (n j) (U j,(tab j,(u j,v j)))) 60002 := by
+    Poly n (fun j => Uniform.tryAdvance.time (n j) (U j,(tab j,(u j,v j)))) 80002 := by
   have hp := tryP n U tab u v hl ht hb
   have hw := tryWork n U tab u v hl ht hb
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
@@ -100,9 +100,9 @@ variable {J : Type} (n : J → ℕ) (U : ∀ j, Universe (n j)) (tab : ∀ j, Ta
 variable (u : ∀ j, Algorithm.State (Fin (n j)) × Algorithm.Block (Fin (n j)))
 
 theorem finishing
-    (hl : Poly n (fun j => (tab j).length) 30000)
+    (hl : Poly n (fun j => (tab j).length) 40000)
     (ht : ∀ j, TableSmall (tab j)) (hb : ∀ j, BlockSmall (u j).2) :
-    Poly n (fun j => Uniform.finishing.time (n j) (u j,(U j,tab j))) 60002 := by
+    Poly n (fun j => Uniform.finishing.time (n j) (u j,(U j,tab j))) 80002 := by
   have htv := Poly.volumeTable tab (Poly.size n) hl ht
   have hbV := Poly.volumeSmallBlock (fun j => (u j).2) (Poly.size n) hb
   have hL : Poly n (fun j => volume (Algorithm.lookup (tab j) (u j).1.right)) 2 :=

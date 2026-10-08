@@ -186,16 +186,16 @@ open ThreeMachine.Algorithm
 
 namespace Realizer
 
-def triple : Realizer (fun n : ℕ => 3*n) :=
-  (((id.pair id).comp add).pair id |>.comp add).congr (fun n => by
+def triple : Realizer (fun n : ℕ => 4*n) :=
+  (((id.pair id).comp add).pair ((id.pair id).comp add) |>.comp add).congr (fun n => by
     simp only [Function.comp_apply,id_eq]
     omega)
 
 end Realizer
 
 def scheduleMatrix {n : ℕ} (M : Matrix n) (T : ℕ) : Option (Fin n → ℕ) :=
-  if hn : n ≤ 3*T then
-    (Algorithm.fullSolve (paddedOrder (matrixRel M) (3*T))).map
+  if hn : n ≤ 4*T then
+    (Algorithm.fullSolve (paddedOrder (matrixRel M) (4*T))).map
       (fun s x => s.time (Fin.castLE hn x))
   else none
 
@@ -216,14 +216,14 @@ def restrictTime : Uniform (fun (i : ℕ × ℕ) (x : Universe i.1 × (Fin i.2 �
   exact A.vectorMapAny Prod.fst
 
 def paddedSolve : Uniform (fun (i : ℕ × ℕ) (x : Cardinal i.2 × Matrix i.1) =>
-    Algorithm.fullSolve (paddedOrder (matrixRel x.2) (3*i.2))) := by
+    Algorithm.fullSolve (paddedOrder (matrixRel x.2) (4*i.2))) := by
   let U : Uniform (fun (i : ℕ × ℕ) (_ : Cardinal i.2 × Matrix i.1) =>
-      (Universe.mk () : Universe (3*i.2))) := (fst.comp (cardinalMap Prod.snd Realizer.triple)).comp
-    (makeUniverseAny (fun i : ℕ × ℕ => 3*i.2))
-  let A := (U.pair snd).comp (paddedMatrix.reindex (fun i : ℕ × ℕ => (i.1,3*i.2)))
-  exact ((U.pair A).comp (fullSolve.reindex (fun i : ℕ × ℕ => 3*i.2))).congr (fun i x => by
-    have h : matrixRel (fun a b : Fin (3*i.2) => decide (paddedOrder (matrixRel x.2) (3*i.2) a b)) =
-        paddedOrder (matrixRel x.2) (3*i.2) := by
+      (Universe.mk () : Universe (4*i.2))) := (fst.comp (cardinalMap Prod.snd Realizer.triple)).comp
+    (makeUniverseAny (fun i : ℕ × ℕ => 4*i.2))
+  let A := (U.pair snd).comp (paddedMatrix.reindex (fun i : ℕ × ℕ => (i.1,4*i.2)))
+  exact ((U.pair A).comp (fullSolve.reindex (fun i : ℕ × ℕ => 4*i.2))).congr (fun i x => by
+    have h : matrixRel (fun a b : Fin (4*i.2) => decide (paddedOrder (matrixRel x.2) (4*i.2) a b)) =
+        paddedOrder (matrixRel x.2) (4*i.2) := by
       funext a b
       exact propext (by simp only [matrixRel,decide_eq_true_eq])
     simp only [Function.comp_apply,h])
@@ -232,18 +232,18 @@ def scheduleMatrixFixed : Uniform (fun (i : ℕ × ℕ)
     (x : Universe i.1 × (Cardinal i.2 × Matrix i.1)) =>
       ThreeMachine.StackCompiler.scheduleMatrix x.2.2 i.2) := by
   let P : Uniform (fun (i : ℕ × ℕ) (_ : Universe i.1 × (Cardinal i.2 × Matrix i.1)) =>
-      decide (i.1 ≤ 3*i.2)) :=
+      decide (i.1 ≤ 4*i.2)) :=
     (((fst.comp (universeNumber.reindex Prod.fst)).pair
       ((snd.comp fst).comp (cardinalValue Prod.snd) |>.comp (Realizer.triple.uniform (ℕ × ℕ)))).comp
       (Realizer.le.uniform (ℕ × ℕ)))
-  let R : Uniform (fun (i : ℕ × ℕ) (x : Algorithm.Block (Fin (3*i.2)) × Universe i.1) =>
+  let R : Uniform (fun (i : ℕ × ℕ) (x : Algorithm.Block (Fin (4*i.2)) × Universe i.1) =>
       (fun v : Fin i.1 => (List.ofFn x.1.time).getD v.val 0)) :=
-    (snd.pair (fst.comp (blockTime.reindex (fun i : ℕ × ℕ => 3*i.2)))).comp
-      (restrictTime.reindex (fun i : ℕ × ℕ => (i.1,3*i.2)))
+    (snd.pair (fst.comp (blockTime.reindex (fun i : ℕ × ℕ => 4*i.2)))).comp
+      (restrictTime.reindex (fun i : ℕ × ℕ => (i.1,4*i.2)))
   let A := (((snd.comp paddedSolve).pair fst).comp R.optionMap)
   exact ((P.pair id).comp (A.choose none)).congr (fun i x => by
     simp only [Function.comp_apply,ThreeMachine.StackCompiler.scheduleMatrix]
-    by_cases h : i.1 ≤ 3*i.2
+    by_cases h : i.1 ≤ 4*i.2
     · simp only [decide_eq_true_eq,ite_eq_left h,dite_eq_left h]
       apply congrArg (fun f => Option.map f _)
       funext b

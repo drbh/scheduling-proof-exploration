@@ -23,7 +23,7 @@ structure RunData (K : GlobalList J) (rank : J → ℕ) (atoms : A → Set J)
   second : Set J
   entry_eq : ∀ i ∈ K.indices, K.entry i = base i ∩ RankTail rank (threshold i)
   simple : ∀ i ∈ K.indices, i ≠ 0 → Described atoms (base i) 2
-  first_small : Described atoms (base 0) 24
+  first_small : Described atoms (base 0) 28
   second_small : Described atoms second 1
   second_eq : base 1 = second
   cover : ∀ x ∈ W, x ∉ second → x ∈ base 0
@@ -124,7 +124,7 @@ noncomputable def append (D : RunData K rank atoms W) (I : Set J)
 
 theorem entry_small (D : RunData K rank atoms W)
     (hrank : ∀ k, Described atoms (RankTail rank k) 1) {i : ℕ} (hi : i ∈ K.indices) :
-    Described atoms (K.entry i) 25 := by
+    Described atoms (K.entry i) 29 := by
   rw [D.entry_eq i hi]
   by_cases he : i = 0
   · subst i
@@ -165,8 +165,8 @@ theorem short_upset_extension (D : RunData K rank atoms W) {r : J → J → Prop
     (hK : K.Upsets r) (hD : GlobalUpset r D.second)
     (hstrict : ∀ x y, r x y → rank x < rank y)
     (hrank : ∀ k, Described atoms (RankTail rank k) 1)
-    (hfalse : Described atoms ∅ 1) (hcard : K.indices.card ≤ 5) :
-    ∃ H : Set J, GlobalUpset r H ∧ Described atoms H 20 ∧
+    (hfalse : Described atoms ∅ 1) (hcard : K.indices.card ≤ 6) :
+    ∃ H : Set J, GlobalUpset r H ∧ Described atoms H 24 ∧
       ∀ x ∈ W, x ∈ H ↔ x ∈ K.Qual := by
   classical
   let H : Set J := {x | ∃ i ∈ K.indices, x ∈ D.flatEntry i}
@@ -278,7 +278,7 @@ theorem pruned_length {K : GlobalList J} {r : J → J → Prop}
     (hup : K.Upsets r) (hdisj : K.InjectionDisjoint W)
     (hB : ∀ z ∈ B.val, z ∈ W)
     (hhigh : ∀ x ∈ W', x ∈ K.Qual → ∃ z ∈ B.val, r x z) :
-    (K.prune W').indices.card ≤ 5 := by
+    (K.prune W').indices.card ≤ 6 := by
   classical
   let P := K.prune W'
   let I := P.indices.filter (2 ≤ ·)
@@ -307,7 +307,7 @@ theorem pruned_length {K : GlobalList J} {r : J → J → Prop}
   rw [hnot] at hsum
   change I.card + _ = P.indices.card at hsum
   have hthree := B.property
-  change (K.prune W').indices.card ≤ 5
+  change (K.prune W').indices.card ≤ 6
   dsimp only [P] at hsum hsmall
   omega
 
@@ -331,7 +331,7 @@ noncomputable def root (htrue : Described atoms Set.univ 1) :
   · intro hz
     simp [GlobalList.one] at hz
 
-noncomputable def switched {G D : Set J} (hG : Described atoms G 24)
+noncomputable def switched {G D : Set J} (hG : Described atoms G 28)
     (hD : Described atoms D 1) (hcover : ∀ x ∈ W, x ∉ D → x ∈ G) (k : ℕ) :
     RunData (GlobalList.pair (G ∩ RankTail rank k) D) rank atoms W := by
   refine { base := fun i => if i = 0 then G else D

@@ -24,29 +24,29 @@ namespace ThreeMachine.StackCompiler.Costs
 variable {J : Type} (n : J → ℕ) (k : ℕ)
 
 theorem assignmentsInner (ys : ∀ j, List (Fin k → Finset (Fin (n j))))
-    (a : ∀ j, Finset (Fin (n j))) (hl : Poly n (fun j => (ys j).length) (3*k)) :
-    Poly n (fun j => (Uniform.assignmentsInner (α := fun n => Finset (Fin n)) k).time (n j) (a j,ys j)) (6*k+5) := by
-  have hv : Poly n (fun j => volume (ys j)) (3*k+2) := by poly_auto
+    (a : ∀ j, Finset (Fin (n j))) (hl : Poly n (fun j => (ys j).length) (4*k)) :
+    Poly n (fun j => (Uniform.assignmentsInner (α := fun n => Finset (Fin n)) k).time (n j) (a j,ys j)) (8*k+5) := by
+  have hv : Poly n (fun j => volume (ys j)) (4*k+2) := by poly_auto
   have hdegree :
       max
         (max
-          (max (max (max (max (2 * 1) (3 * k + 2)) 0) (max (max (2 * 1) (3 * k + 2)) 0))
-            (0 + max (max (max (max (2 * 1) (3 * k + 2)) (3 * k + 2)) (2 * 1)) 0))
-          (3 * k + max 2 (max (3 * k + 2) (max (2 * 1) (3 * k + 2)))))
-        (0 + max (max (3 * k + 2) (2 * 1)) 0) ≤ 6 * k + 5 := by omega
+          (max (max (max (max (2 * 1) (4 * k + 2)) 0) (max (max (2 * 1) (4 * k + 2)) 0))
+            (0 + max (max (max (max (2 * 1) (4 * k + 2)) (4 * k + 2)) (2 * 1)) 0))
+          (4 * k + max 2 (max (4 * k + 2) (max (2 * 1) (4 * k + 2)))))
+        (0 + max (max (4 * k + 2) (2 * 1)) 0) ≤ 8 * k + 5 := by omega
   poly_auto
 
 theorem assignmentsStep (xs : ∀ j, List (Finset (Fin (n j))))
     (ys : ∀ j, List (Fin k → Finset (Fin (n j))))
-    (hl : Poly n (fun j => (xs j).length) 3)
-    (hL : Poly n (fun j => (ys j).length) (3*k)) :
-    Poly n (fun j => (Uniform.assignmentsStep (α := fun n => Finset (Fin n)) k).time (n j) (xs j,ys j)) (9*k+10) := by
-  have hv : Poly n (fun j => volume (ys j)) (3*k+2) := by poly_auto
-  have hx : Poly n (fun j => volume (xs j)) 5 := by poly_auto
+    (hl : Poly n (fun j => (xs j).length) 4)
+    (hL : Poly n (fun j => (ys j).length) (4*k)) :
+    Poly n (fun j => (Uniform.assignmentsStep (α := fun n => Finset (Fin n)) k).time (n j) (xs j,ys j)) (12*k+12) := by
+  have hv : Poly n (fun j => volume (ys j)) (4*k+2) := by poly_auto
+  have hx : Poly n (fun j => volume (xs j)) 6 := by poly_auto
   have hI := assignmentsInner (fun p : Poly.ListPool xs => n p.1) k
     (fun p => ys p.1) (fun p => p.2.1) (hL.precomp Sigma.fst)
-  have hdegree : 3 + (3 * k + 2) +
-      max (6 * k + 5) (max 5 (max (3 * k + 2) (3 + (3 * k + 2)))) ≤ 9 * k + 10 := by omega
+  have hdegree : 4 + (4 * k + 2) +
+      max (8 * k + 5) (max 6 (max (4 * k + 2) (4 + (4 * k + 2)))) ≤ 12 * k + 12 := by omega
   poly_auto
 end ThreeMachine.StackCompiler.Costs
 end
@@ -54,24 +54,24 @@ end
 section
 namespace ThreeMachine.StackCompiler.Costs
 variable {J : Type} (n : J → ℕ) (xs : ∀ j, List (Finset (Fin (n j))))
-theorem assignments (hl : Poly n (fun j => (xs j).length) 3) (k : ℕ) :
-    Poly n (fun j => (Uniform.assignments (α := fun n => Finset (Fin n)) k).time (n j) (xs j)) (9*k+10) := by
-  have hx : Poly n (fun j => volume (xs j)) 5 := by poly_auto
+theorem assignments (hl : Poly n (fun j => (xs j).length) 4) (k : ℕ) :
+    Poly n (fun j => (Uniform.assignments (α := fun n => Finset (Fin n)) k).time (n j) (xs j)) (12*k+12) := by
+  have hx : Poly n (fun j => volume (xs j)) 6 := by poly_auto
   induction k with
   | zero =>
-    change Poly n (fun j => (Uniform.assignments (α := fun n => Finset (Fin n)) 0).time (n j) (xs j)) 10
+    change Poly n (fun j => (Uniform.assignments (α := fun n => Finset (Fin n)) 0).time (n j) (xs j)) 12
     poly_auto
   | succ k ih =>
-    change Poly n (fun j => (Uniform.assignments (α := fun n => Finset (Fin n)) (k+1)).time (n j) (xs j)) (9*(k+1)+10)
-    change Poly n (fun j => (Uniform.assignments (α := fun n => Finset (Fin n)) k).time (n j) (xs j)) (9*k+10) at ih
-    have hL : Poly n (fun j => (Structure.assignments (xs j) k).length) (3*k) := by
+    change Poly n (fun j => (Uniform.assignments (α := fun n => Finset (Fin n)) (k+1)).time (n j) (xs j)) (12*(k+1)+12)
+    change Poly n (fun j => (Uniform.assignments (α := fun n => Finset (Fin n)) k).time (n j) (xs j)) (12*k+12) at ih
+    have hL : Poly n (fun j => (Structure.assignments (xs j) k).length) (4*k) := by
       simpa only [Structure.assignments_length] using hl.pow k
-    have hV : Poly n (fun j => volume (Structure.assignments (xs j) k)) (3*k+2) := by poly_auto
-    change Poly n (fun j => (Uniform.assignments (α := fun n => Finset (Fin n)) (k+1)).time (n j) (xs j)) (9*(k+1)+10)
+    have hV : Poly n (fun j => volume (Structure.assignments (xs j) k)) (4*k+2) := by poly_auto
+    change Poly n (fun j => (Uniform.assignments (α := fun n => Finset (Fin n)) (k+1)).time (n j) (xs j)) (12*(k+1)+12)
     have hStep := assignmentsStep n k xs (fun j => Structure.assignments (xs j) k) hl hL
     have hdegree :
-      max (max (max (max 5 (9 * k + 10)) (0 + max (max (max 5 5) (3 * k + 2)) 0)) (9 * k + 10))
-        (0 + max (max 5 (3 * k + 2)) 0) ≤ 9 * (k + 1) + 10 := by omega
+      max (max (max (max 6 (12 * k + 12)) (0 + max (max (max 6 6) (4 * k + 2)) 0)) (12 * k + 12))
+        (0 + max (max 6 (4 * k + 2)) 0) ≤ 12 * (k + 1) + 12 := by omega
     poly_auto
 end ThreeMachine.StackCompiler.Costs
 end
@@ -124,7 +124,7 @@ theorem lengthThresholds (n : J → ℕ) (M : ∀ j, Matrix (n j)) (frame : Bool
 
 theorem lengthCones (n : J → ℕ) (M : ∀ j, Matrix (n j)) (frame : Bool) (ks : List (Fin 5)) :
     Poly n (fun j => (ks.flatMap (fun k => ((tripleList (List.finRange (n j))).map Subtype.val).map
-      (coneSet (M j) frame k))).length) 3 := by
+      (coneSet (M j) frame k))).length) 4 := by
   have htr := Poly.lengthTriples (Poly.size n)
   have he (j : J) :
       (ks.flatMap (fun k => ((tripleList (List.finRange (n j))).map Subtype.val).map
@@ -188,17 +188,17 @@ end ThreeMachine.StackCompiler.Uniform
 namespace ThreeMachine.StackCompiler.Costs
 open ThreeMachine.Structure
 theorem familyAssignments (K : ℕ) : Poly (fun x : Σ n, Universe n × Matrix n => x.1)
-    (fun x => (Uniform.familyAssignments K).time x.1 x.2) (max (max 100 (9*K+10)) 5) := by
+    (fun x => (Uniform.familyAssignments K).time x.1 x.2) (max (max 100 (12*K+12)) 6) := by
   let n : (Σ n, Universe n × Matrix n) → ℕ := Sigma.fst
   let xs (x : Σ n, Universe n × Matrix n) :=
     (Atomic.alphabet (List.finRange x.1)).map
       (Atomic.finsetEval (matrixRel x.2.2) (Structure.jobRank (matrixRel x.2.2)) (Structure.reverseJobRank (matrixRel x.2.2)))
-  have hl : Poly n (fun x => (xs x).length) 3 := by
+  have hl : Poly n (fun x => (xs x).length) 4 := by
     simpa only [xs,List.length_map] using Poly.lengthAlphabet (Poly.size n)
   have hA := assignments n xs hl K
-  have hAL : Poly n (fun x => (Structure.assignments (xs x) K).length) (3*K) := by
+  have hAL : Poly n (fun x => (Structure.assignments (xs x) K).length) (4*K) := by
     simpa only [Structure.assignments_length] using hl.pow K
-  have hAV : Poly n (fun x => volume (Structure.assignments (xs x) K)) (3*K+2) := by poly_auto
+  have hAV : Poly n (fun x => volume (Structure.assignments (xs x) K)) (4*K+2) := by poly_auto
   poly_auto
 theorem familyEval (K : ℕ) : Poly (fun x : Σ n, (Fin K → Finset (Fin n)) × Universe n => x.1)
     (fun x => (Uniform.familyEval K).time x.1 x.2) 4 := by
@@ -206,13 +206,13 @@ theorem familyEval (K : ℕ) : Poly (fun x : Σ n, (Fin K → Finset (Fin n)) ×
 
 theorem familyFlatten {J : Type} (K : ℕ) (n : J → ℕ) (U : ∀ j, Universe (n j))
     (xs : ∀ j, List (Fin K → Finset (Fin (n j))))
-    (hl : Poly n (fun j => (xs j).length) 30000) :
-    Poly n (fun j => (Uniform.familyFlatten K).time (n j) (xs j,U j)) 60004 := by
+    (hl : Poly n (fun j => (xs j).length) 40000) :
+    Poly n (fun j => (Uniform.familyFlatten K).time (n j) (xs j,U j)) 80004 := by
   let P := Σ j, {a : Fin K → Finset (Fin (n j)) // a ∈ xs j}
   let sp (p : P) := n p.1
   have ht : Poly sp (fun p => (Uniform.familyEval K).time (n p.1) (p.2.1,U p.1)) 4 := by
     exact (familyEval K).precomp (fun p : P => (⟨n p.1,(p.2.1,U p.1)⟩ : Σ m, (Fin K → Finset (Fin m)) × Universe m))
-  have hx : Poly n (fun j => volume (xs j)) 30002 := by poly_auto
+  have hx : Poly n (fun j => volume (xs j)) 40002 := by poly_auto
   have he : Poly n (fun j => volume (U j)) 2 := by poly_auto
   have hlout : Poly sp (fun p => ((Formula.templates K).map (Formula.evalFinset p.2.1)).length) 0 := by
     simpa only [List.length_map] using Poly.const sp (Formula.templates K).length
@@ -221,21 +221,21 @@ theorem familyFlatten {J : Type} (K : ℕ) (n : J → ℕ) (U : ∀ j, Universe 
   exact (Poly.flatMapTime (α := fun n => Fin K → Finset (Fin n)) n xs U (Uniform.familyEval K) hl ht hx he hv).lift (by decide)
 
 theorem familyBound (K : ℕ) (hk : K ≤ 10000) : Poly (fun x : Σ n, Universe n × Matrix n => x.1)
-    (fun x => (Uniform.family K).time x.1 x.2) 90010 := by
+    (fun x => (Uniform.family K).time x.1 x.2) 120012 := by
   let n : (Σ n, Universe n × Matrix n) → ℕ := Sigma.fst
   let xs (x : Σ n, Universe n × Matrix n) :=
     (Atomic.alphabet (List.finRange x.1)).map
       (Atomic.finsetEval (matrixRel x.2.2) (Structure.jobRank (matrixRel x.2.2)) (Structure.reverseJobRank (matrixRel x.2.2)))
-  have hl : Poly n (fun x => (xs x).length) 3 := by
+  have hl : Poly n (fun x => (xs x).length) 4 := by
     simpa only [xs,List.length_map] using Poly.lengthAlphabet (Poly.size n)
-  have hAL : Poly n (fun x => (Structure.assignments (xs x) K).length) 30000 := by
-    simpa only [Structure.assignments_length] using (hl.pow K).lift (Nat.mul_le_mul_left 3 hk)
-  have hAV : Poly n (fun x => volume (Structure.assignments (xs x) K)) 30002 := by poly_auto
-  have hA := (familyAssignments K).lift (show max (max 100 (9*K+10)) 5 ≤ 90010 by omega)
+  have hAL : Poly n (fun x => (Structure.assignments (xs x) K).length) 40000 := by
+    simpa only [Structure.assignments_length] using (hl.pow K).lift (Nat.mul_le_mul_left 4 hk)
+  have hAV : Poly n (fun x => volume (Structure.assignments (xs x) K)) 40002 := by poly_auto
+  have hA := (familyAssignments K).lift (show max (max 100 (12*K+12)) 6 ≤ 120012 by omega)
   have hF := familyFlatten K n (fun x => x.2.1) (fun x => Structure.assignments (xs x) K) hAL
   poly_auto
 theorem family : Poly (fun x : Σ n, Universe n × Matrix n => x.1)
-    (fun x => (Uniform.family 10000).time x.1 x.2) 90010 := familyBound 10000 (by omega)
+    (fun x => (Uniform.family 10000).time x.1 x.2) 120012 := familyBound 10000 (by omega)
 
 end ThreeMachine.StackCompiler.Costs
 end

@@ -39,23 +39,23 @@ namespace ThreeMachine.StackCompiler.Costs
 variable {J : Type} (n : J → ℕ) (U : ∀ j, Universe (n j)) (M : ∀ j, Matrix (n j))
 variable (fs zs : ∀ j, List (Finset (Fin (n j)))) (W : ∀ j, Finset (Fin (n j)))
 theorem statesPairs
-    (hf : Poly n (fun j => (fs j).length) 30000) (hz : Poly n (fun j => (zs j).length) 3) :
-    Poly n (fun j => Uniform.statesPairs.time (n j) (U j,(M j,(fs j,(zs j,W j))))) 60020 := by
+    (hf : Poly n (fun j => (fs j).length) 40000) (hz : Poly n (fun j => (zs j).length) 4) :
+    Poly n (fun j => Uniform.statesPairs.time (n j) (U j,(M j,(fs j,(zs j,W j))))) 80022 := by
   have hfv := Poly.volumeSetList fs (Poly.size n) hf
   have hzv := Poly.volumeSetList zs (Poly.size n) hz
   poly_auto
 
 theorem statesS
-    (hf : Poly n (fun j => (fs j).length) 30000) (hz : Poly n (fun j => (zs j).length) 3) :
-    Poly n (fun j => Uniform.statesS.time (n j) (U j,(M j,(fs j,(zs j,W j))))) 60020 := by
+    (hf : Poly n (fun j => (fs j).length) 40000) (hz : Poly n (fun j => (zs j).length) 4) :
+    Poly n (fun j => Uniform.statesS.time (n j) (U j,(M j,(fs j,(zs j,W j))))) 80022 := by
   have hp := statesPairs n U M fs zs W hf hz
   have hfv := Poly.volumeSetList fs (Poly.size n) hf
   have hzv := Poly.volumeSetList zs (Poly.size n) hz
   poly_auto
 
 theorem states
-    (hf : Poly n (fun j => (fs j).length) 30000) (hz : Poly n (fun j => (zs j).length) 3) :
-    Poly n (fun j => Uniform.states.time (n j) (U j,(M j,(fs j,(zs j,W j))))) 120008 := by
+    (hf : Poly n (fun j => (fs j).length) 40000) (hz : Poly n (fun j => (zs j).length) 4) :
+    Poly n (fun j => Uniform.states.time (n j) (U j,(M j,(fs j,(zs j,W j))))) 160010 := by
   have hS := statesS n U M fs zs W hf hz
   have hfv := Poly.volumeSetList fs (Poly.size n) hf
   have hzv := Poly.volumeSetList zs (Poly.size n) hz

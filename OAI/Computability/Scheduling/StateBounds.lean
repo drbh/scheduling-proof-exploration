@@ -95,13 +95,13 @@ theorem volumeMarks (ms : ∀ j, Marks (n j)) (hn : Poly s n d)
   poly_bound
 
 theorem lengthTriples (hn : Poly s n d) :
-    Poly s (fun j => (Structure.tripleList (List.finRange (n j))).length) (3*d) := by
+    Poly s (fun j => (Structure.tripleList (List.finRange (n j))).length) (4*d) := by
   apply of_le (fun j => Structure.tripleList_length (List.finRange (n j)))
   simp only [List.length_finRange]
   poly_bound
 
 theorem lengthAlphabet (hn : Poly s n d) :
-    Poly s (fun j => (Structure.Atomic.alphabet (List.finRange (n j))).length) (3*d) := by
+    Poly s (fun j => (Structure.Atomic.alphabet (List.finRange (n j))).length) (4*d) := by
   apply of_le (fun j => Structure.Atomic.alphabet_length (List.finRange (n j)))
   simp only [Fintype.card_fin,List.length_finRange]
   poly_bound
@@ -109,7 +109,7 @@ theorem lengthAlphabet (hn : Poly s n d) :
 theorem lengthFamily (M : ∀ j, Matrix (n j)) (K : ℕ) (hn : Poly s n d) :
     Poly s (fun j => (Structure.effectiveFamily (matrixRel (M j))
       (Structure.jobRank (matrixRel (M j))) (Structure.reverseJobRank (matrixRel (M j)))
-      (List.finRange (n j)) K).length) (3*K*d) := by
+      (List.finRange (n j)) K).length) (4*K*d) := by
   simp only [Structure.effectiveFamily_length]
   have h := (lengthAlphabet hn).pow K
   convert h.mul (const s (Structure.Formula.templates K).length) using 1; ring

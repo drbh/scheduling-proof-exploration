@@ -99,7 +99,7 @@ variable (k : J → ℕ) (o : ∀ j, Option (ℕ × (Fin (n j) → ℕ)))
 variable (hn : Poly s n 1) (hk : Poly s k 1) (ho : Poly s (fun j => volume (o j)) 2)
 include hn hk ho
 
-theorem bestAttempt : Poly s (fun j => Uniform.bestAttempt.time (n j) ((U j,M j),(k j,o j))) 150010 := by
+theorem bestAttempt : Poly s (fun j => Uniform.bestAttempt.time (n j) ((U j,M j),(k j,o j))) 200012 := by
   let P : Uniform (fun (n : ℕ) (x : Uniform.BestState n) => (x.1.1,(x.2.1+1,x.1.2))) :=
     (Uniform.fst.comp Uniform.fst).pair (Uniform.bestNext.pair (Uniform.fst.comp Uniform.snd))
   have hsucc : Poly s (fun j => k j+1) 1 := hk.add (Poly.const s 1)
@@ -109,12 +109,12 @@ theorem bestAttempt : Poly s (fun j => Uniform.bestAttempt.time (n j) ((U j,M j)
     dsimp only [P]
     poly_auto
   have hV : Poly s (fun j => volume (U j,(k j+1,M j))) 2 := by poly_auto
-  have hST : Poly s (fun j => Uniform.scheduleMatrix.time (n j) (U j,(k j+1,M j))) 150010 := by
+  have hST : Poly s (fun j => Uniform.scheduleMatrix.time (n j) (U j,(k j+1,M j))) 200012 := by
     have hs : Poly s (fun j => n j+(k j+1)) 1 := hn.add hsucc
-    exact Poly.reparam (r := 1) (d := 150010) scheduleMatrix
+    exact Poly.reparam (r := 1) (d := 200012) scheduleMatrix
       (fun j => ⟨n j,(U j,(k j+1,M j))⟩) hs
   have hSC := Poly.compTimeSame P Uniform.scheduleMatrix n (fun j => ((U j,M j),(k j,o j)))
-    (hP.lift (show 2 ≤ 150010 by decide)) hST (hV.lift (show 2 ≤ 150010 by decide))
+    (hP.lift (show 2 ≤ 200012 by decide)) hST (hV.lift (show 2 ≤ 200012 by decide))
   apply Poly.of_le (fun j => Uniform.time_attach_le (P.comp Uniform.scheduleMatrix) Uniform.bestNext
     (n j) ((U j,M j),(k j,o j)))
   poly_auto
@@ -128,7 +128,7 @@ variable {J : Type} (s n : J → ℕ) (U : ∀ j, Universe (n j)) (M : ∀ j, Ma
 variable (k : J → ℕ) (o : ∀ j, Option (ℕ × (Fin (n j) → ℕ)))
 variable (hn : Poly s n 1) (hk : Poly s k 1) (ho : Poly s (fun j => volume (o j)) 2)
 include hn hk ho
-theorem bestRetain : Poly s (fun j => Uniform.bestRetain.time (n j) ((U j,M j),(k j,o j))) 150010 := by
+theorem bestRetain : Poly s (fun j => Uniform.bestRetain.time (n j) ((U j,M j),(k j,o j))) 200012 := by
   have hsucc : Poly s (fun j => k j+1) 1 := hk.add (Poly.const s 1)
   have hS := Poly.volumeSchedule s n (fun j => k j+1) M hn hsucc
   have hAV : Poly s (fun j => volume ((ThreeMachine.StackCompiler.scheduleMatrix (M j) (k j+1)).map (fun t => (k j+1,t)))) 2 := by
@@ -148,7 +148,7 @@ variable (k : J → ℕ) (o : ∀ j, Option (ℕ × (Fin (n j) → ℕ)))
 variable (hn : Poly s n 1) (hk : Poly s k 1) (ho : Poly s (fun j => volume (o j)) 2)
 include hn hk ho
 theorem bestMatrixStep :
-    Poly s (fun j => Uniform.bestMatrixStep.time (n j) ((U j,M j),(k j,o j))) 150010 := by
+    Poly s (fun j => Uniform.bestMatrixStep.time (n j) ((U j,M j),(k j,o j))) 200012 := by
   have hsucc : Poly s (fun j => k j+1) 1 := hk.add (Poly.const s 1)
   have hS := Poly.volumeSchedule s n (fun j => k j+1) M hn hsucc
   have hAV : Poly s (fun j => volume ((ThreeMachine.StackCompiler.scheduleMatrix (M j) (k j+1)).map (fun t => (k j+1,t)))) 2 := by
@@ -190,7 +190,7 @@ section
 namespace ThreeMachine.StackCompiler.Costs
 variable {J : Type} (s n : J → ℕ) (U : ∀ j, Universe (n j)) (M : ∀ j, Matrix (n j))
 theorem bestMatrix (hn : Poly s n 1) :
-    Poly s (fun j => Uniform.bestMatrix.time (n j) (U j,M j)) 150011 := by
+    Poly s (fun j => Uniform.bestMatrix.time (n j) (U j,M j)) 200013 := by
   let a (j : J) : (Universe (n j) × Matrix (n j)) × (ℕ × Option (ℕ × (Fin (n j) → ℕ))) :=
     ((U j,M j),(0,none))
   have hnp := hn.precomp (Sigma.fst : Poly.IterPool n → J)
@@ -203,7 +203,7 @@ theorem bestMatrix (hn : Poly s n 1) :
     hnp hkp hbest
   have hti : Poly (fun p : Poly.IterPool n => s p.1)
       (fun p => Uniform.bestMatrixStep.time (n p.1)
-        (ThreeMachine.StackCompiler.bestMatrixStep^[p.2.1] (a p.1))) 150010 := by
+        (ThreeMachine.StackCompiler.bestMatrixStep^[p.2.1] (a p.1))) 200012 := by
     simpa only [a,bestMatrix_iterate] using hstep
   have hvi : Poly (fun p : Poly.IterPool n => s p.1)
       (fun p => volume (ThreeMachine.StackCompiler.bestMatrixStep^[p.2.1] (a p.1))) 2 := by

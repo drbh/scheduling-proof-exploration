@@ -12,9 +12,9 @@ structure FullBlock (r : J → J → Prop) (W : Set J) where
   length : ℕ
   time : J → ℕ
   bounds : ∀ x ∈ W, 1 ≤ time x ∧ time x ≤ length
-  capacity : ∀ t, {x | x ∈ W ∧ time x = t}.ncard ≤ 3
+  capacity : ∀ t, {x | x ∈ W ∧ time x = t}.ncard ≤ 4
   respects : ∀ x ∈ W, ∀ y ∈ W, r x y → time x < time y
-  size : W.ncard = 3 * length
+  size : W.ncard = 4 * length
 
 namespace FullBlock
 variable {U V W : Set J}
@@ -387,12 +387,12 @@ variable {J : Type} [Fintype J]
 
 theorem exists_slot_embedding {T : ℕ} (time : J → ℕ)
     (hbound : ∀ x, 1 ≤ time x ∧ time x ≤ T)
-    (hcap : ∀ t, {x | time x = t}.ncard ≤ 3) :
-    ∃ f : J → Fin (3*T), Function.Injective f ∧
-      ∀ x, (f x).val / 3 + 1 = time x := by
+    (hcap : ∀ t, {x | time x = t}.ncard ≤ 4) :
+    ∃ f : J → Fin (4*T), Function.Injective f ∧
+      ∀ x, (f x).val / 4 + 1 = time x := by
   classical
   let slot : J → Fin T := fun x => ⟨time x - 1, by have := hbound x; omega⟩
-  have hc (i : Fin T) : Fintype.card {x // slot x = i} ≤ 3 := by
+  have hc (i : Fin T) : Fintype.card {x // slot x = i} ≤ 4 := by
     have he : {x | slot x = i} = {x | time x = i.val + 1} := by
       ext x
       simp only [Set.mem_ofPred_eq, Fin.ext_iff]
@@ -400,13 +400,13 @@ theorem exists_slot_embedding {T : ℕ} (time : J → ℕ)
       have := hbound x
       omega
     rw [← Nat.card_eq_fintype_card]
-    change {x | slot x = i}.ncard ≤ 3
+    change {x | slot x = i}.ncard ≤ 4
     rw [he]
     exact hcap _
-  let embed (i : Fin T) : {x // slot x = i} ↪ Fin 3 :=
+  let embed (i : Fin T) : {x // slot x = i} ↪ Fin 4 :=
     (Fintype.equivFin {x // slot x = i}).toEmbedding.trans
       (Fin.castLEEmb (by simpa using hc i))
-  let code : (Σ i : Fin T, {x // slot x = i}) → Fin T × Fin 3 :=
+  let code : (Σ i : Fin T, {x // slot x = i}) → Fin T × Fin 4 :=
     fun z => (z.1, embed z.1 z.2)
   have hcode : Function.Injective code := by
     rintro ⟨i, x⟩ ⟨j, y⟩ he
@@ -416,33 +416,33 @@ theorem exists_slot_embedding {T : ℕ} (time : J → ℕ)
     change x = y at hxy'
     subst y
     rfl
-  let f₀ : J → Fin T × Fin 3 := code ∘ (Equiv.sigmaFiberEquiv slot).symm
+  let f₀ : J → Fin T × Fin 4 := code ∘ (Equiv.sigmaFiberEquiv slot).symm
   have hf : Function.Injective f₀ := hcode.comp (Equiv.sigmaFiberEquiv slot).symm.injective
-  let conv : Fin T × Fin 3 ≃ Fin (3*T) :=
-    finProdFinEquiv.trans (finCongr (Nat.mul_comm T 3))
-  let f : J → Fin (3*T) := conv ∘ f₀
+  let conv : Fin T × Fin 4 ≃ Fin (4*T) :=
+    finProdFinEquiv.trans (finCongr (Nat.mul_comm T 4))
+  let f : J → Fin (4*T) := conv ∘ f₀
   refine ⟨f, conv.injective.comp hf, ?_⟩
   intro x
-  have hidx : (embed (slot x) ⟨x, rfl⟩).val < 3 := (embed (slot x) ⟨x, rfl⟩).isLt
-  change ((embed (slot x) ⟨x, rfl⟩).val + 3 * (slot x).val) / 3 + 1 = time x
-  change ((embed (slot x) ⟨x, rfl⟩).val + 3 * (time x - 1)) / 3 + 1 = time x
+  have hidx : (embed (slot x) ⟨x, rfl⟩).val < 4 := (embed (slot x) ⟨x, rfl⟩).isLt
+  change ((embed (slot x) ⟨x, rfl⟩).val + 4 * (slot x).val) / 4 + 1 = time x
+  change ((embed (slot x) ⟨x, rfl⟩).val + 4 * (time x - 1)) / 4 + 1 = time x
   have := hbound x
   omega
 
 theorem exists_layout_time {T : ℕ} (time : J → ℕ)
     (hbound : ∀ x, 1 ≤ time x ∧ time x ≤ T)
-    (hcap : ∀ t, {x | time x = t}.ncard ≤ 3)
-    (hsize : Fintype.card J = 3 * T) :
+    (hcap : ∀ t, {x | time x = t}.ncard ≤ 4)
+    (hsize : Fintype.card J = 4 * T) :
     ∃ p : Layout J, ∀ x, p.time x = time x := by
   obtain ⟨f, hf, ht⟩ := exists_slot_embedding time hbound hcap
-  let e : J ≃ Fin (3*T) := Equiv.ofBijective f
+  let e : J ≃ Fin (4*T) := Equiv.ofBijective f
     ((Fintype.bijective_iff_injective_and_card f).mpr ⟨hf, by simpa using hsize⟩)
   let p : Layout J := e.trans (finCongr hsize.symm)
   exact ⟨p, ht⟩
 
 theorem FullBlock.layout {r : J → J → Prop} (s : FullBlock r Set.univ) :
     ∃ p : Layout J, p.Full r := by
-  have hsize : Fintype.card J = 3*s.length := by
+  have hsize : Fintype.card J = 4*s.length := by
     simpa only [Set.ncard_univ, Nat.card_eq_fintype_card] using s.size
   obtain ⟨p, hp⟩ := exists_layout_time s.time (fun x => s.bounds x (Set.mem_univ x))
     (fun t => by simpa only [Set.mem_univ, true_and] using s.capacity t) hsize

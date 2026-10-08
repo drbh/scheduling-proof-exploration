@@ -46,14 +46,14 @@ theorem fullSolve_small {n : ℕ} (r : Fin n → Fin n → Prop) [DecidableRel r
   exact layers_small r _ _ _ _ _ (Algorithm.lookup_mem h)
 
 theorem scheduleMatrix_bound {n T : ℕ} (M : Matrix n) {t : Fin n → ℕ}
-    (h : scheduleMatrix M T = some t) (v : Fin n) : t v ≤ 3*T := by
+    (h : scheduleMatrix M T = some t) (v : Fin n) : t v ≤ 4*T := by
   simp only [scheduleMatrix] at h
   split_ifs at h with hn
   · obtain ⟨b,hb,rfl⟩ := Option.map_eq_some_iff.mp h
     exact (fullSolve_small _ hb).2 _
 
 theorem bestMatrix_bound {n k : ℕ} (M : Matrix n) {a : ℕ × (Fin n → ℕ)}
-    (h : bestMatrix M k = some a) : a.1 ≤ k ∧ ∀ v, a.2 v ≤ 3*k := by
+    (h : bestMatrix M k = some a) : a.1 ≤ k ∧ ∀ v, a.2 v ≤ 4*k := by
   induction k with
   | zero => simp only [bestMatrix] at h; contradiction
   | succ k ih =>
@@ -83,7 +83,7 @@ theorem answerMatrix_length {n : ℕ} (M : Matrix n) (d : Option ℕ) :
       Option.getD_none,Option.getD_some,List.length_nil,List.length_ofFn,Nat.zero_le,le_refl]
 
 theorem answerMatrix_bound {n : ℕ} (M : Matrix n) (d : Option ℕ) {a : ℕ}
-    (h : a ∈ (answerMatrix M d).getD []) : a ≤ 3*(n+d.getD 0) := by
+    (h : a ∈ (answerMatrix M d).getD []) : a ≤ 4*(n+d.getD 0) := by
   cases d with
   | none =>
     simp only [answerMatrix,Option.getD_none] at h ⊢
@@ -108,20 +108,20 @@ namespace Poly
 variable {J : Type} (s n T : J → ℕ) (M : ∀ j, Matrix (n j))
 theorem volumeSchedule (hn : Poly s n 1) (hT : Poly s T 1) :
     Poly s (fun j => volume (scheduleMatrix (M j) (T j))) 2 := by
-  apply volumeOption _ (show Poly s (fun j => 1+n j*(6*T j+2)) 2 from by poly_bound)
+  apply volumeOption _ (show Poly s (fun j => 1+n j*(8*T j+2)) 2 from by poly_bound)
   intro j t ht
-  exact volume_function_le t (6*T j+1) (by
+  exact volume_function_le t (8*T j+1) (by
     intro v; rw [volume_nat]; have := scheduleMatrix_bound (M j) ht v; omega)
 
 theorem volumeBest (hn : Poly s n 1) (hT : Poly s T 1) :
     Poly s (fun j => volume (bestMatrix (M j) (T j))) 2 := by
-  apply volumeOption _ (show Poly s (fun j => (2*T j+1)+(1+n j*(6*T j+2))+1) 2 from by poly_bound)
+  apply volumeOption _ (show Poly s (fun j => (2*T j+1)+(1+n j*(8*T j+2))+1) 2 from by poly_bound)
   intro j a ha
   have hb := bestMatrix_bound (M j) ha
-  have hv := volume_function_le a.2 (6*T j+1) (by
+  have hv := volume_function_le a.2 (8*T j+1) (by
     intro v; rw [volume_nat]; have := hb.2 v; omega)
   rw [volume_prod,volume_nat]
-  have he : 6*T j+1+1=6*T j+2 := by omega
+  have he : 8*T j+1+1=8*T j+2 := by omega
   rw [he] at hv
   omega
 end Poly
@@ -132,7 +132,7 @@ section
 namespace ThreeMachine.StackCompiler.Realizer
 theorem time_triple_le (n : ℕ) : triple.time n ≤ 100000000000*(n+1)^2 := by
   have h1 := time_add_le n n
-  have h2 := time_add_le (n+n) n
+  have h2 := time_add_le (n+n) (n+n)
   simp only [triple,time_congr,time_comp,time_pair,time_id,volume_prod,volume_nat,Function.comp_apply,id_eq]
   nlinarith
 end ThreeMachine.StackCompiler.Realizer

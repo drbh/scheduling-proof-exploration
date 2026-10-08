@@ -395,7 +395,7 @@ end ThreeMachine.Structure
 
 namespace ThreeMachine.Structure
 
-abbrev Triple (J : Type) := {Z : Finset J // Z.card = 3}
+abbrev Triple (J : Type) := {Z : Finset J // Z.card = 4}
 
 inductive Boundary (J : Type)
   | left
